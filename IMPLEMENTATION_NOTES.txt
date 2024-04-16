@@ -1,0 +1,25 @@
+Christopher Danner, cld99
+
+Notes:
+
+parser.y
+- Added "for.h" and "bool.h" to include statements
+- Allowed for additional semicolon after increment statement of for loop (compared to usual for loop syntax) because grammar has all statements terminate in a semicolon
+- ASTStatementFor takes in parameters in order of body, init statement, condition, increment statement, in accordance with supplied instructions in README file
+- Added additional production to iterStmt to allow for null conditional, though null conditional resulting in page fault despite handling within for (other null parameters worked as intended)
+- Added BOOL_LITERAL production of constant since it was not already included
+- AND and OR expressions seemed to result in missing terminator error, though Soren and I were unable to identify what would be causing the issue
+- While false, 0, and 1 worked for defining boolean values, true resulted in an error where the value could not be resolved, and Soren and I were unable to identify the source of the error
+
+subtraction.cpp
+- File named subtraction, in accordance with supplied instructions in README file and supplied header file (rather than sub, as specified in the LATEX file)
+
+intToBool.cpp
+- Used NEQ comparison rather than true cast to avoid truncating bits
+
+negative.cpp
+- I assumed that this was referring to unary minus rather than logical negation, since the parser specified the logical negation would not be implemented
+
+forBasic.c
+- Expanded increment statement because increment operator is not implemented in our grammar
+- Added additional semicolon after the increment statement, in line with assumptions made in parser for implementation simplicity
