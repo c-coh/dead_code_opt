@@ -102,7 +102,7 @@ void AST::WriteLLVMBitcodeToFile(const std::string& outFile)
     outBc.close();
 }
 
-void AST::DeadCodeElimination()
+void AST::DeadCodeEliminationPass()
 { 
     // Keep track of variable live status.
     std::map<std::string, bool> variables;
@@ -112,14 +112,15 @@ void AST::DeadCodeElimination()
 
     for (auto& func : functionList)
     {
-        //ITERATIVE METHOD
-        std::stack<ASTStatement> trav;
-        //Get body of function and push to stack
-        while (trav.top()) {
-            ASTStatement node = trav.top();
-            //Add case statements for all statement/expression types
-        }
-
-        //OR RECURSIVE METHOD
+        //Get body of function and call EliminateDeadCode on it
+        std::unique_ptr<ASTStatement> node = func->GetDef();
+        EliminateDeadCode(node, variables, functions);
     }
 }
+
+private:
+
+    void AST::EliminateDeadCode(std::unique_ptr<ASTStatement> node, std::map<std::string, bool>& variables, std::map<std::string, llvm::Value*>& functions)
+    {
+        //Add case statements for all statement/expression types, with updates to live status and recursive calls on children as needed
+    }

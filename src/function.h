@@ -85,4 +85,7 @@ public:
     // mod: Module to add the function to.
     // builder: IR builder used to build instructions.
     void Compile(llvm::Module& mod, llvm::IRBuilder<>& builder);
+
+    // Get pointer to function definition (body)
+    std::unique_ptr<ASTStatement> GetDef();
 };
