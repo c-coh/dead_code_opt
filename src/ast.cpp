@@ -1,6 +1,7 @@
 #include "ast.h"
 
 #include <iostream>
+#include <typeinfo>
 #include <llvm/Bitcode/BitcodeWriter.h>
 
 //#include <llvm/Transforms/InstCombine/InstCombine.h> // This causes an error on my machine.
@@ -123,4 +124,29 @@ private:
     void AST::EliminateDeadCode(std::unique_ptr<ASTStatement> node, std::map<std::string, bool>& variables, std::map<std::string, llvm::Value*>& functions)
     {
         //Add case statements for all statement/expression types, with updates to live status and recursive calls on children as needed
+        auto type = typeid(*node);
+        switch(type) {
+            case typeid(ASTStatementBlock):
+                for(int i = node->statements.size(); i > 0; i--) {
+                    EliminateDeadCode(node->statements[i], variables, functions);
+                }
+                break;
+            case typeid(AstStatementIf):
+                EliminateDeadCode(node->elseStatement, variables, functions);
+                EliminateDeadCode(node->thenStatement, variables, functions);
+                EliminateDeadCode(node->condition, variables, functions);
+            case typeid(ASTStatementWhile):
+                EliminateDeadCode(node->body, variables, functions);
+                EliminateDeadCode(node->condition, variables, functions);
+                break;
+            case typeid(ASTStatementFor):
+                EliminateDeadCode(node->increment, variables, functions);
+                EliminateDeadCode(node->body, variables, functions);
+                EliminateDeadCode(node->condition, variables, functions);
+                EliminateDeadCode(node->increment, variables, functions);
+                break;
+            case typeid(ASTStatementReturn):
+                EliminateDeadCode(node->returnExpression, variables, functions);
+                break;
+        }
     }
