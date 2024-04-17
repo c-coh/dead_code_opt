@@ -135,6 +135,7 @@ private:
                 EliminateDeadCode(node->elseStatement, variables, functions);
                 EliminateDeadCode(node->thenStatement, variables, functions);
                 EliminateDeadCode(node->condition, variables, functions);
+                break;
             case typeid(ASTStatementWhile):
                 EliminateDeadCode(node->body, variables, functions);
                 EliminateDeadCode(node->condition, variables, functions);
@@ -148,5 +149,8 @@ private:
             case typeid(ASTStatementReturn):
                 EliminateDeadCode(node->returnExpression, variables, functions);
                 break;
+            // Recursively process complex statements/expressions until reaching the lowest-level nodes (basic expressions and statements)
+            // When you reach an expression, update live use information
+            // When you reach an assignment, reference live use information and remove if necessary (possibly switch to boolean return type to facilitate removal?)
         }
     }
