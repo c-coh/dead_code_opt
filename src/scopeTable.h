@@ -11,15 +11,13 @@ struct ASTFunction;
 // Table that keeps track of function definitions and variables.
 class ScopeTable
 {
-private:
+public:
 
     // Keep track of variable types.
     std::map<std::string, std::unique_ptr<VarType>> types;
 
     // Keep track of variable values.
     std::map<std::string, llvm::Value*> values;
-
-public:
 
     // Add a variable/function to the scope table.
     // name: Name of the variable to add.

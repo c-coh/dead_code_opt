@@ -5,11 +5,11 @@
 // An expression that is a constant float.
 class ASTExpressionFloat : public ASTExpression
 {
-    // Constant float value.
-    double value;
 
 public:
-
+    // Constant float value.
+    double value;
+    
     // Create a new constant float expression.
     // val: Constant float value to create.
     explicit ASTExpressionFloat(double val) : value(val) {}

@@ -5,10 +5,10 @@
 // An expression that simply converts a bool type to an int type.
 class ASTExpressionBool2Int : public ASTExpression
 {
+public:
+
     // Operand to work on.
     std::unique_ptr<ASTExpression> operand;
-
-public:
 
     // Create a bool to int conversion.
     // operand: Expression to convert to an int. Make sure it is a bool type, or else this will fail.

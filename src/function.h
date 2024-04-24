@@ -21,7 +21,8 @@ typedef std::vector<ASTFunctionParameter> ASTFunctionParameters;
 // Function type that has a declaration and optional definition.
 class ASTFunction
 {
-private:
+
+public:
 
     // List of all the parameters.
     std::vector<std::string> parameters;
@@ -37,8 +38,6 @@ private:
 
     // Actual Function definition.
     std::unique_ptr<ASTStatement> definition = nullptr;
-
-public:
 
     // Name of the function.
     std::string name;

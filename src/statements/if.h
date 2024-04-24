@@ -7,6 +7,8 @@
 class ASTStatementIf : public ASTStatement
 {
 
+public:
+
     // Condition to check.
     std::unique_ptr<ASTExpression> condition;
 
@@ -15,9 +17,7 @@ class ASTStatementIf : public ASTStatement
 
     // Else statement to execute.
     std::unique_ptr<ASTStatement> elseStatement;
-
-public:
-
+    
     // Create a new if statement.
     // condition: Condition to check.
     // thenStatement: Statement to execute if the condition is true.

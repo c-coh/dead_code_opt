@@ -6,6 +6,8 @@
 // For a for loop statement.
 class ASTStatementFor : public ASTStatement
 {
+
+public:
     // Loop body to execute.
     std::unique_ptr<ASTStatement> body;
     
@@ -17,9 +19,7 @@ class ASTStatementFor : public ASTStatement
 
     // Increment statement to execute.
     std::unique_ptr<ASTStatement> increment;
-
-public:
-
+    
     // Create a new for statement.
     // body: Statement to execute while the condition is true.
     // init: Statement to execute on loop start.

@@ -16,15 +16,15 @@ enum ASTExpressionComparisonType
 // An expression that is a comparison.
 class ASTExpressionComparison : public ASTExpression
 {
+public:
+
     // Type of comparison to do.
     ASTExpressionComparisonType type;
 
     // Operands to work with.
     std::unique_ptr<ASTExpression> a1;
     std::unique_ptr<ASTExpression> a2;
-
-public:
-
+    
     // Create a new comparison expression.
     // type: Type of comparison to do.
     // a1: Left operand.

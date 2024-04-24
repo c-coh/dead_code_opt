@@ -5,11 +5,11 @@
 // An expression that is a constant int.
 class ASTExpressionInt : public ASTExpression
 {
-    // Constant int value.
-    int value;
 
 public:
-
+    // Constant int value.
+    int value;
+    
     // Create a new constant int expression.
     // val: Constant int value to create.
     explicit ASTExpressionInt(int val) : value(val) {}

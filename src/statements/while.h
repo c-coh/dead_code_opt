@@ -7,14 +7,14 @@
 class ASTStatementWhile : public ASTStatement
 {
 
+public:
+
     // Condition to check.
     std::unique_ptr<ASTExpression> condition;
 
     // Then statement to execute.
     std::unique_ptr<ASTStatement> thenStatement;
-
-public:
-
+    
     // Create a new while statement.
     // condition: Condition to check.
     // thenStatement: Statement to execute while the condition is true.

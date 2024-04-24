@@ -5,15 +5,16 @@
 // An expression that divides one operand by the other.
 class ASTExpressionDivision : public ASTExpression
 {
+
+public:
+
     // Operands to work with.
     std::unique_ptr<ASTExpression> a1;
     std::unique_ptr<ASTExpression> a2;
 
     // Return type to cache.
     VarTypeSimple* returnType = nullptr;
-
-public:
-
+    
     // Create a new division expression.
     // a1: Left side expression of the division statement.
     // a2: Right side expression of the division statement.

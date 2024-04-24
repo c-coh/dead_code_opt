@@ -5,11 +5,12 @@
 // An expression that simply converts an int type to a floating type.
 class ASTExpressionInt2Float : public ASTExpression
 {
-    // Operand to work on.
-    std::unique_ptr<ASTExpression> operand;
 
 public:
 
+    // Operand to work on.
+    std::unique_ptr<ASTExpression> operand;
+    
     // Create a new integer to float conversion.
     // operand: Expression to convert to a float. Make sure it is an int type, or else this will fail.
     explicit ASTExpressionInt2Float(std::unique_ptr<ASTExpression> operand) : operand(std::move(operand)) {}

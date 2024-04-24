@@ -7,11 +7,11 @@
 // An expression that is a constant string.
 class ASTExpressionString : public ASTExpression
 {
-    // Constant string value.
-    std::string value;
 
 public:
-
+    // Constant string value.
+    std::string value;
+    
     // Create a new constant string expression.
     // str: Constant string value to create.
     explicit ASTExpressionString(std::string  str) : value(std::move(str)) {}

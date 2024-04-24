@@ -5,11 +5,12 @@
 // An expression that is a constant bool.
 class ASTExpressionBool : public ASTExpression
 {
-    // Constant bool value.
-    bool value;
 
 public:
 
+    // Constant bool value.
+    bool value;
+    
     // Create a new constant bool expression.
     // val: Constant bool value to create.
     explicit ASTExpressionBool(bool val) : value(val) {}

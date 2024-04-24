@@ -5,11 +5,11 @@
 // An expression that stores one expression into another.
 class ASTExpressionAssignment: public ASTExpression
 {
+
+public:
     // Operands to work with.
     std::unique_ptr<ASTExpression> left;
     std::unique_ptr<ASTExpression> right;
-
-public:
 
     // Create a new addition expression.
     // left: Value to store an expression into (has to be an L-Value).

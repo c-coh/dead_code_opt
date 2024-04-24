@@ -7,14 +7,14 @@
 class ASTExpressionCall : public ASTExpression
 {
 
+public:
+
     // Value to call.
     std::unique_ptr<ASTExpression> callee;
 
     // Values to pass to the call.
     std::vector<std::unique_ptr<ASTExpression>> arguments;
-
-public:
-
+    
     // Create a new call expression.
     // callee: The expression to call.
     // arguments: Arguments to pass to the call.

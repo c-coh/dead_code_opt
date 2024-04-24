@@ -5,12 +5,12 @@
 // An expression that ors too boolean expressions together.
 class ASTExpressionOr : public ASTExpression
 {
+
+public:
     // Operands to work with.
     std::unique_ptr<ASTExpression> a1;
     std::unique_ptr<ASTExpression> a2;
-
-public:
-
+    
     // Create a new or expression.
     // a1: Left side expression of the or statement.
     // a2: Right side expression of the or statement.

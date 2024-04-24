@@ -5,12 +5,12 @@
 // An expression that ands too boolean expressions together.
 class ASTExpressionAnd : public ASTExpression
 {
+
+public:
     // Operands to work with.
     std::unique_ptr<ASTExpression> a1;
     std::unique_ptr<ASTExpression> a2;
-
-public:
-
+    
     // Create a new and expression.
     // a1: Left side expression of the and statement.
     // a2: Right side expression of the and statement.

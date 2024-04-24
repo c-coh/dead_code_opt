@@ -5,15 +5,15 @@
 // An expression that multiplies two operands together.
 class ASTExpressionMultiplication : public ASTExpression
 {
+
+public:
     // Operands to work with.
     std::unique_ptr<ASTExpression> a1;
     std::unique_ptr<ASTExpression> a2;
 
     // Return type to cache.
     VarTypeSimple* returnType = nullptr;
-
-public:
-
+    
     // Create a new multiplication expression.
     // a1: Left side expression of the multiplication statement.
     // a2: Right side expression of the multiplication statement.

@@ -7,11 +7,11 @@
 // An expression that resolves a variable.
 class ASTExpressionVariable : public ASTExpression
 {
-    // Referenced variable.
-    std::string var;
 
 public:
-
+    // Referenced variable.
+    std::string var;
+    
     // Resolve a variable. Functions are variables too!
     // var: Name of the variable to reference.
     explicit ASTExpressionVariable(std::string var) : var(std::move(var)) {}
