@@ -121,14 +121,14 @@ void AST::DeadCodeEliminationPass()
 
 private:
 
-    void AST::EliminateDeadCode(std::unique_ptr<ASTStatement> node, std::map<std::string, bool>& variables, std::map<std::string, llvm::Value*>& functions)
+    bool AST::EliminateDeadCode(std::unique_ptr<ASTStatement> node, std::map<std::string, bool>& variables, std::map<std::string, llvm::Value*>& functions)
     {
         //Add case statements for all statement/expression types, with updates to live status and recursive calls on children as needed
         auto type = typeid(*node);
         switch(type) {
             case typeid(ASTStatementBlock):
-                for(int i = node->statements.size(); i > 0; i--) {
-                    EliminateDeadCode(node->statements[i], variables, functions);
+                for(int i = node->statements->size(); i > 0; i--) {
+                    EliminateDeadCode(node->*statements[i], variables, functions);
                 }
                 break;
             case typeid(AstStatementIf):
@@ -137,20 +137,56 @@ private:
                 EliminateDeadCode(node->condition, variables, functions);
                 break;
             case typeid(ASTStatementWhile):
-                EliminateDeadCode(node->body, variables, functions);
+                EliminateDeadCode(node->thenStatement, variables, functions);
                 EliminateDeadCode(node->condition, variables, functions);
                 break;
             case typeid(ASTStatementFor):
                 EliminateDeadCode(node->increment, variables, functions);
                 EliminateDeadCode(node->body, variables, functions);
                 EliminateDeadCode(node->condition, variables, functions);
-                EliminateDeadCode(node->increment, variables, functions);
+                EliminateDeadCode(node->init, variables, functions);
                 break;
             case typeid(ASTStatementReturn):
                 EliminateDeadCode(node->returnExpression, variables, functions);
                 break;
+            case typeid(ASTExpressionAddition):
+            case typeid(ASTExpressionSubtraction):
+            case typeid(ASTExpressionMultiplication):
+            case typeid(ASTExpressionDivision):
+            case typeid(ASTExpressionAnd):
+            case typeid(ASTExpressionOr):
+            case typeid(ASTExpressionComparison):
+                EliminateDeadCode(node->a1, variables, functions);
+                EliminateDeadCode(node->a2, variables, functions);
+                break;
+            case typeid(ASTExpressionFloat2Int):
+            case typeid(ASTExpressionInt2Float):
+            case typeid(ASTExpressionInt2Bool):
+            case typeid(ASTExpressionBool2Int):
+            case typeid(ASTExpressionNegation):
+                EliminateDeadCode(node->operand, variables, functions);
+                break;
+            case typeid(ASTExpressionCall):
+                functions->emplace(node->callee->toString(), true);
+                for(int i = node->arguments->size(); i > 0; i--) {
+                    EliminateDeadCode(node->*arguments[i], variables, functions);
+                }
+                break;
+            case typeid(ASTExpressionVar):
+                // Finish implementation
+                break;
+            case typeid(ASTExpressionAssignment):
+                if(variables->find(node->left->toString()) != variables->end() && variables->at(node->left->toString())) {
+                    *variables[node->left->toString()] = false;
+                    EliminateDeadCode(node->right, variables, functions);
+                    return false;
+                }
+                return true;
+                break;
             // Recursively process complex statements/expressions until reaching the lowest-level nodes (basic expressions and statements)
             // When you reach an expression, update live use information
             // When you reach an assignment, reference live use information and remove if necessary (possibly switch to boolean return type to facilitate removal?)
+            // Use dynamic_cast to check node type?
         }
+        return false;
     }
