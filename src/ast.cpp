@@ -105,20 +105,17 @@ void AST::WriteLLVMBitcodeToFile(const std::string& outFile)
 
 void AST::DeadCodeEliminationPass()
 {
-
     for (auto& func : functionList)
     {
         // Keep track of variable live status.
         std::map<std::string, bool> variables;
         // Keep track of function live status.
         std::map<std::string, llvm::Value*> functions;
+        // For each defined function, perform dead code elimination on its body
         if(func->GetDef()) {
-            //Get body of function and call EliminateDeadCode on it
+            // Get body of function and call EliminateDeadCode on it
             std::unique_ptr<ASTStatement> node = func->GetDef();
             EliminateDeadCode(node, variables, functions);
-            for(int i = node->stackVariables->size() - 1; i >= 0; i--) {
-                if(node->*stackVariables[i], variables, functions) node->stackVariables->erase(i);
-            }
         }
     }
 }
@@ -129,29 +126,37 @@ private:
     {
         // Use dynamic_cast to check node type?
         auto type = typeid(*node);
+        // Recursively call dead code elimination for complex nodes, or update/retrieve live status for simple variable uses/assignments
         switch(type) {
             case typeid(ASTStatementBlock):
+                // Iterate through children in reverse order, removing dead assignments
                 for(int i = node->statements->size() - 1; i >= 0; i--) {
                     if(EliminateDeadCode(node->*statements[i], variables, functions)) node->statements->erase(i);
                 }
                 break;
             case typeid(AstStatementIf):
+                // Set up duplicate variable status map to account for branching paths
                 std::map<std::string, bool> elseVars(variables);
                 if(EliminateDeadCode(node->elseStatement, elseVars, functions)) node->elseStatement = std::unique_ptr<ASTStatement>(nullptr);
                 if(EliminateDeadCode(node->thenStatement, variables, functions)) node->thenStatement = std::unique_ptr<ASTStatement>(nullptr);
+                // Merge maps, assigning live status to variables that are live in either branch
                 mergeVarMaps(variables, elseVars);
                 if(EliminateDeadCode(node->condition, variables, functions)) node->condition = node->condition->right;
                 break;
             case typeid(ASTStatementWhile):
+                // Set up duplicate variable status map to account for branching paths
                 std::map<std::string, bool> loopVars(variables);
                 if(EliminateDeadCode(node->thenStatement, loopVars, functions)) node->thenStatement = std::unique_ptr<ASTStatement>(nullptr);
+                // Merge maps, assigning live status to variables that are live in either branch
                 mergeVarMaps(variables, loopVars);
                 if(EliminateDeadCode(node->condition, variables, functions)) node->condition = node->condition->right;
                 break;
             case typeid(ASTStatementFor):
+                // Set up duplicate variable status map to account for branching paths
                 std::map<std::string, bool> loopVars(variables);
-                EliminateDeadCode(node->increment, loopVars, functions) //Perform some measure of simplification on increment?
+                EliminateDeadCode(node->increment, loopVars, functions) node->increment = node->increment->right;
                 if(EliminateDeadCode(node->body, loopVars, functions)) node->body = std::unique_ptr<ASTStatement>(nullptr);
+                // Merge maps, assigning live status to variables that are live in either branch
                 mergeVarMaps(variables, loopVars);
                 if(EliminateDeadCode(node->condition, variables, functions)) node->condition = node->condition->right;
                 if(EliminateDeadCode(node->init, variables, functions)) node->init = std::unique_ptr<ASTStatement>(nullptr);
@@ -177,13 +182,15 @@ private:
                 if(EliminateDeadCode(node->operand, variables, functions)) node->operand = node->operand->right;
                 break;
             case typeid(ASTExpressionCall):
-                functions->emplace(node->callee->toString(), true);
+                // Mark function as called
+                functions.emplace(node->callee->toString(), true);
                 for(int i = node->arguments->size() - 1; i >= 0; i--) {
                     if(EliminateDeadCode(node->*arguments[i], variables, functions)) node->statements->erase(i);
                 }
                 break;
             case typeid(ASTExpressionVar):
-                if(variables->find(node->var) != variables->end()) {
+                // If variable is already in map, update live status to true, otherwise add it to map
+                if(variables.find(node->var) != variables->end()) {
                     variables[node->var] = true;
                 }
                 else {
@@ -191,8 +198,9 @@ private:
                 }
                 break;
             case typeid(ASTExpressionAssignment):
-                if(variables->find(node->left->toString()) != variables->end() && variables->at(node->left->toString())) {
-                    *variables[node->left->toString()] = false;
+                // If variable is in map and live, set live status to false but do not remove assignment, otherwise, mark assignment for removal
+                if(variables.find(node->left->toString()) != variables->end() && variables->at(node->left->toString())) {
+                    variables[node->left->toString()] = false;
                     if(EliminateDeadCode(node->right, variables, functions)) node->right = node->right->right;
                     return false;
                 }
@@ -203,8 +211,11 @@ private:
     }
 
     void mergeVarMaps(std::map<std::string, bool>& map1, std::map<std::string, bool>& map2) {
+        // Add each variable from map 2 to map 1 if not already included
         for(auto& [key, value] : map2) {
+            // If variable is not in map 1, add it
             if(map1->find(key) == map1->end()) map1.emplace(key, value);
+            // If variable is in map 1 and it is live in map 2, set it to live
             else if(value) map1[key] = value;
         }
     }
