@@ -68,4 +68,20 @@ public:
     // outFile: Where to write the .bc file.
     void WriteLLVMBitcodeToFile(const std::string& outFile);
 
+    // Perform dead code elimination on AST.
+    void DeadCodeEliminationPass();
+
+private:
+
+    // Perform dead code elimination from designated node.
+    // node: Pointer to starting node.
+    // variables: Pointer to variable live status map.
+    // functions: Pointer to function live status map.
+    bool EliminateDeadCode(std::unique_ptr<ASTStatement> node, std::map<std::string, bool>& variables, std::map<std::string, bool>& functions);
+
+    // Merge second map into first, taking map1.bool = map1.bool || map2.bool for duplicate keys
+    // map1: Map to be merged into
+    // map2: Map to merge
+    void mergeVarMaps(std::map<std::string, bool>& map1, std::map<std::string, bool>& map2);
+
 };

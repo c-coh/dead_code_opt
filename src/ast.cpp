@@ -105,17 +105,17 @@ void AST::WriteLLVMBitcodeToFile(const std::string& outFile)
 
 void AST::DeadCodeEliminationPass()
 {
-    for (auto& func : functionList)
+    for (auto& [name, func] : functions)
     {
         // Keep track of variable live status.
-        std::map<std::string, bool> variables;
+        std::map<std::string, bool> varLive;
         // Keep track of function live status.
-        std::map<std::string, llvm::Value*> functions;
+        std::map<std::string, bool> funcLive;
         // For each defined function, perform dead code elimination on its body
-        if(func->GetDef()) {
+        if(func->definition) {
             // Get body of function and call EliminateDeadCode on it
-            std::unique_ptr<ASTStatement> node = func->GetDef();
-            EliminateDeadCode(node, variables, functions);
+            std::unique_ptr<ASTStatement> node = func->definition;
+            EliminateDeadCode(node, varLive, funcLive);
         }
     }
 }
@@ -210,11 +210,12 @@ private:
         return false;
     }
 
-    void mergeVarMaps(std::map<std::string, bool>& map1, std::map<std::string, bool>& map2) {
+    void AST::mergeVarMaps(std::map<std::string, bool>& map1, std::map<std::string, bool>& map2)
+    {
         // Add each variable from map 2 to map 1 if not already included
         for(auto& [key, value] : map2) {
             // If variable is not in map 1, add it
-            if(map1->find(key) == map1->end()) map1.emplace(key, value);
+            if(map1.find(key) == map1.end()) map1.emplace(key, value);
             // If variable is in map 1 and it is live in map 2, set it to live
             else if(value) map1[key] = value;
         }

@@ -158,11 +158,6 @@ void ASTFunction::Compile(llvm::Module& mod, llvm::IRBuilder<>& builder)
 
 }
 
-std::unique_ptr<ASTStatement> GetDef()
-{
-    return definition;
-}
-
 std::string ASTFunction::ToString(const std::string& prefix)
 {
     std::string output = name + "\n";
