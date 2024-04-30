@@ -104,18 +104,22 @@ void AST::WriteLLVMBitcodeToFile(const std::string& outFile)
 }
 
 void AST::DeadCodeEliminationPass()
-{ 
-    // Keep track of variable live status.
-    std::map<std::string, bool> variables;
-
-    // Keep track of function live status.
-    std::map<std::string, llvm::Value*> functions;
+{
 
     for (auto& func : functionList)
     {
-        //Get body of function and call EliminateDeadCode on it
-        std::unique_ptr<ASTStatement> node = func->GetDef();
-        EliminateDeadCode(node, variables, functions);
+        // Keep track of variable live status.
+        std::map<std::string, bool> variables;
+        // Keep track of function live status.
+        std::map<std::string, llvm::Value*> functions;
+        if(func->GetDef()) {
+            //Get body of function and call EliminateDeadCode on it
+            std::unique_ptr<ASTStatement> node = func->GetDef();
+            EliminateDeadCode(node, variables, functions);
+            for(int i = node->stackVariables->size() - 1; i >= 0; i--) {
+                if(node->*stackVariables[i], variables, functions) node->stackVariables->erase(i);
+            }
+        }
     }
 }
 
@@ -123,31 +127,33 @@ private:
 
     bool AST::EliminateDeadCode(std::unique_ptr<ASTStatement> node, std::map<std::string, bool>& variables, std::map<std::string, llvm::Value*>& functions)
     {
-        //Add case statements for all statement/expression types, with updates to live status and recursive calls on children as needed
         auto type = typeid(*node);
         switch(type) {
             case typeid(ASTStatementBlock):
-                for(int i = node->statements->size(); i > 0; i--) {
-                    EliminateDeadCode(node->*statements[i], variables, functions);
+                for(int i = node->statements->size() - 1; i >= 0; i--) {
+                    if(EliminateDeadCode(node->*statements[i], variables, functions)) node->statements->erase(i);
                 }
                 break;
             case typeid(AstStatementIf):
-                EliminateDeadCode(node->elseStatement, variables, functions);
-                EliminateDeadCode(node->thenStatement, variables, functions);
-                EliminateDeadCode(node->condition, variables, functions);
+                //Create new variable live tables, then merge at end
+                if(EliminateDeadCode(node->elseStatement, variables, functions)) node->elseStatement = std::unique_ptr<ASTStatement>(nullptr);
+                if(EliminateDeadCode(node->thenStatement, variables, functions)) node->thenStatement = std::unique_ptr<ASTStatement>(nullptr);
+                if(EliminateDeadCode(node->condition, variables, functions)) node->condition = node->condition->right;
                 break;
             case typeid(ASTStatementWhile):
-                EliminateDeadCode(node->thenStatement, variables, functions);
-                EliminateDeadCode(node->condition, variables, functions);
+                //Create new variable live table, then merge at end
+                if(EliminateDeadCode(node->thenStatement, variables, functions)) node->thenStatement = std::unique_ptr<ASTStatement>(nullptr);
+                if(EliminateDeadCode(node->condition, variables, functions)) node->condition = node->condition->right;
                 break;
             case typeid(ASTStatementFor):
-                EliminateDeadCode(node->increment, variables, functions);
-                EliminateDeadCode(node->body, variables, functions);
-                EliminateDeadCode(node->condition, variables, functions);
-                EliminateDeadCode(node->init, variables, functions);
+                //Create new variable live table, then merge at end
+                EliminateDeadCode(node->increment, variables, functions) //Perform some measure of simplification on increment?
+                if(EliminateDeadCode(node->body, variables, functions)) node->body = std::unique_ptr<ASTStatement>(nullptr);
+                if(EliminateDeadCode(node->condition, variables, functions)) node->condition = node->condition->right;
+                if(EliminateDeadCode(node->init, variables, functions)) node->init = std::unique_ptr<ASTStatement>(nullptr);
                 break;
             case typeid(ASTStatementReturn):
-                EliminateDeadCode(node->returnExpression, variables, functions);
+                if(EliminateDeadCode(node->returnExpression, variables, functions)) node->returnExpression = node->returnExpression->right;
                 break;
             case typeid(ASTExpressionAddition):
             case typeid(ASTExpressionSubtraction):
@@ -156,29 +162,31 @@ private:
             case typeid(ASTExpressionAnd):
             case typeid(ASTExpressionOr):
             case typeid(ASTExpressionComparison):
-                EliminateDeadCode(node->a1, variables, functions);
-                EliminateDeadCode(node->a2, variables, functions);
+                if(EliminateDeadCode(node->a1, variables, functions)) node->a1 = node->a1->right;
+                if(EliminateDeadCode(node->a2, variables, functions)) node->a2 = node->a2->right;
                 break;
             case typeid(ASTExpressionFloat2Int):
             case typeid(ASTExpressionInt2Float):
             case typeid(ASTExpressionInt2Bool):
             case typeid(ASTExpressionBool2Int):
             case typeid(ASTExpressionNegation):
-                EliminateDeadCode(node->operand, variables, functions);
+                if(EliminateDeadCode(node->operand, variables, functions)) node->operand = node->operand->right;
                 break;
             case typeid(ASTExpressionCall):
                 functions->emplace(node->callee->toString(), true);
-                for(int i = node->arguments->size(); i > 0; i--) {
-                    EliminateDeadCode(node->*arguments[i], variables, functions);
+                for(int i = node->arguments->size() - 1; i >= 0; i--) {
+                    if(EliminateDeadCode(node->*arguments[i], variables, functions)) node->statements->erase(i);
                 }
                 break;
             case typeid(ASTExpressionVar):
-                // Finish implementation
+                if(variables->find(node->var) != variables->end()) {
+                    *variables[node->var] = true;
+                }
                 break;
             case typeid(ASTExpressionAssignment):
                 if(variables->find(node->left->toString()) != variables->end() && variables->at(node->left->toString())) {
                     *variables[node->left->toString()] = false;
-                    EliminateDeadCode(node->right, variables, functions);
+                    if(EliminateDeadCode(node->right, variables, functions)) node->right = node->right->right;
                     return false;
                 }
                 return true;
