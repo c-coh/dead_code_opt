@@ -125,8 +125,9 @@ void AST::DeadCodeEliminationPass()
 
 private:
 
-    bool AST::EliminateDeadCode(std::unique_ptr<ASTStatement> node, std::map<std::string, bool>& variables, std::map<std::string, llvm::Value*>& functions)
+    bool AST::EliminateDeadCode(std::unique_ptr<ASTStatement> node, std::map<std::string, bool>& variables, std::map<std::string, bool>& functions)
     {
+        // Use dynamic_cast to check node type?
         auto type = typeid(*node);
         switch(type) {
             case typeid(ASTStatementBlock):
@@ -135,20 +136,23 @@ private:
                 }
                 break;
             case typeid(AstStatementIf):
-                //Create new variable live tables, then merge at end
-                if(EliminateDeadCode(node->elseStatement, variables, functions)) node->elseStatement = std::unique_ptr<ASTStatement>(nullptr);
+                std::map<std::string, bool> elseVars(variables);
+                if(EliminateDeadCode(node->elseStatement, elseVars, functions)) node->elseStatement = std::unique_ptr<ASTStatement>(nullptr);
                 if(EliminateDeadCode(node->thenStatement, variables, functions)) node->thenStatement = std::unique_ptr<ASTStatement>(nullptr);
+                mergeVarMaps(variables, elseVars);
                 if(EliminateDeadCode(node->condition, variables, functions)) node->condition = node->condition->right;
                 break;
             case typeid(ASTStatementWhile):
-                //Create new variable live table, then merge at end
-                if(EliminateDeadCode(node->thenStatement, variables, functions)) node->thenStatement = std::unique_ptr<ASTStatement>(nullptr);
+                std::map<std::string, bool> loopVars(variables);
+                if(EliminateDeadCode(node->thenStatement, loopVars, functions)) node->thenStatement = std::unique_ptr<ASTStatement>(nullptr);
+                mergeVarMaps(variables, loopVars);
                 if(EliminateDeadCode(node->condition, variables, functions)) node->condition = node->condition->right;
                 break;
             case typeid(ASTStatementFor):
-                //Create new variable live table, then merge at end
-                EliminateDeadCode(node->increment, variables, functions) //Perform some measure of simplification on increment?
-                if(EliminateDeadCode(node->body, variables, functions)) node->body = std::unique_ptr<ASTStatement>(nullptr);
+                std::map<std::string, bool> loopVars(variables);
+                EliminateDeadCode(node->increment, loopVars, functions) //Perform some measure of simplification on increment?
+                if(EliminateDeadCode(node->body, loopVars, functions)) node->body = std::unique_ptr<ASTStatement>(nullptr);
+                mergeVarMaps(variables, loopVars);
                 if(EliminateDeadCode(node->condition, variables, functions)) node->condition = node->condition->right;
                 if(EliminateDeadCode(node->init, variables, functions)) node->init = std::unique_ptr<ASTStatement>(nullptr);
                 break;
@@ -180,7 +184,10 @@ private:
                 break;
             case typeid(ASTExpressionVar):
                 if(variables->find(node->var) != variables->end()) {
-                    *variables[node->var] = true;
+                    variables[node->var] = true;
+                }
+                else {
+                    variables.emplace(node->var->toString(), true);
                 }
                 break;
             case typeid(ASTExpressionAssignment):
@@ -191,10 +198,13 @@ private:
                 }
                 return true;
                 break;
-            // Recursively process complex statements/expressions until reaching the lowest-level nodes (basic expressions and statements)
-            // When you reach an expression, update live use information
-            // When you reach an assignment, reference live use information and remove if necessary (possibly switch to boolean return type to facilitate removal?)
-            // Use dynamic_cast to check node type?
         }
         return false;
+    }
+
+    void mergeVarMaps(std::map<std::string, bool>& map1, std::map<std::string, bool>& map2) {
+        for(auto& [key, value] : map2) {
+            if(map1->find(key) == map1->end()) map1.emplace(key, value);
+            else if(value) map1[key] = value;
+        }
     }
