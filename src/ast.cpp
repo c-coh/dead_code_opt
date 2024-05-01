@@ -1,4 +1,25 @@
 #include "ast.h"
+#include "function.h"
+#include "statements/block.h"
+#include "statements/for.h"
+#include "statements/if.h"
+#include "statements/return.h"
+#include "statements/while.h"
+#include "expressions/addition.h"
+#include "expressions/and.h"
+#include "expressions/assignment.h"
+#include "expressions/bool2Int.h"
+#include "expressions/call.h"
+#include "expressions/comparison.h"
+#include "expressions/division.h"
+#include "expressions/float2Int.h"
+#include "expressions/int2Bool.h"
+#include "expressions/int2Float.h"
+#include "expressions/multiplication.h"
+#include "expressions/negative.h"
+#include "expressions/or.h"
+#include "expressions/subtraction.h"
+#include "expressions/variable.h"
 
 #include <iostream>
 #include <typeinfo>
@@ -114,89 +135,138 @@ void AST::DeadCodeEliminationPass()
         // For each defined function, perform dead code elimination on its body
         if(func->definition) {
             // Get body of function and call EliminateDeadCode on it
-            std::unique_ptr<ASTStatement> node = func->definition;
-            EliminateDeadCode(node, varLive, funcLive);
+            //std::unique_ptr<ASTStatement> node = func->definition;
+            EliminateDeadCode(std::move(func->definition), varLive, funcLive);
         }
     }
 }
 
-private:
-
     bool AST::EliminateDeadCode(std::unique_ptr<ASTStatement> node, std::map<std::string, bool>& variables, std::map<std::string, bool>& functions)
     {
         // Use dynamic_cast to check node type?
-        auto type = typeid(*node);
+        auto funcType = dynamic_cast<ASTStatementBlock*>(node.get());
         // Recursively call dead code elimination for complex nodes, or update/retrieve live status for simple variable uses/assignments
-        switch(type) {
-            case typeid(ASTStatementBlock):
+            if(dynamic_cast<ASTStatementBlock*>(node.get()) != NULL) {
+                ASTStatementBlock* nodePtr = dynamic_cast<ASTStatementBlock*>(node.get());
                 // Iterate through children in reverse order, removing dead assignments
-                for(int i = node->statements->size() - 1; i >= 0; i--) {
-                    if(EliminateDeadCode(node->*statements[i], variables, functions)) node->statements->erase(i);
+                for(int i = nodePtr->statements.size() - 1; i >= 0; i--) {
+                    if(EliminateDeadCode(std::move(nodePtr->statements[i]), variables, functions)) nodePtr->statements.erase(nodePtr->statements.begin()+i);
                 }
-                break;
-            case typeid(AstStatementIf):
+            }
+            else if(dynamic_cast<ASTStatementIf*>(node.get()) != NULL) {
+                ASTStatementIf* nodePtr = dynamic_cast<ASTStatementIf*>(node.get());
                 // Set up duplicate variable status map to account for branching paths
                 std::map<std::string, bool> elseVars(variables);
-                if(EliminateDeadCode(node->elseStatement, elseVars, functions)) node->elseStatement = std::unique_ptr<ASTStatement>(nullptr);
-                if(EliminateDeadCode(node->thenStatement, variables, functions)) node->thenStatement = std::unique_ptr<ASTStatement>(nullptr);
+                if(EliminateDeadCode(std::move(nodePtr->elseStatement), elseVars, functions)) nodePtr->elseStatement = std::unique_ptr<ASTStatement>(nullptr);
+                if(EliminateDeadCode(std::move(nodePtr->thenStatement), variables, functions)) nodePtr->thenStatement = std::unique_ptr<ASTStatement>(nullptr);
                 // Merge maps, assigning live status to variables that are live in either branch
                 mergeVarMaps(variables, elseVars);
-                if(EliminateDeadCode(node->condition, variables, functions)) node->condition = node->condition->right;
-                break;
-            case typeid(ASTStatementWhile):
+                if(EliminateDeadCode(std::move(nodePtr->condition), variables, functions)) nodePtr->condition = std::move(dynamic_cast<ASTExpressionAssignment*>(nodePtr->condition.get())->right);
+            }
+            else if(dynamic_cast<ASTStatementWhile*>(node.get()) != NULL) {
+                ASTStatementWhile* nodePtr = dynamic_cast<ASTStatementWhile*>(node.get());
                 // Set up duplicate variable status map to account for branching paths
                 std::map<std::string, bool> loopVars(variables);
-                if(EliminateDeadCode(node->thenStatement, loopVars, functions)) node->thenStatement = std::unique_ptr<ASTStatement>(nullptr);
+                if(EliminateDeadCode(std::move(nodePtr->thenStatement), loopVars, functions)) nodePtr->thenStatement = std::unique_ptr<ASTStatement>(nullptr);
                 // Merge maps, assigning live status to variables that are live in either branch
                 mergeVarMaps(variables, loopVars);
-                if(EliminateDeadCode(node->condition, variables, functions)) node->condition = node->condition->right;
-                break;
-            case typeid(ASTStatementFor):
+                if(EliminateDeadCode(std::move(nodePtr->condition), variables, functions)) nodePtr->condition = std::move(dynamic_cast<ASTExpressionAssignment*>(nodePtr->condition.get())->right);
+            }
+            else if(dynamic_cast<ASTStatementFor*>(node.get()) != NULL) {
+                ASTStatementFor* nodePtr = dynamic_cast<ASTStatementFor*>(node.get());
                 // Set up duplicate variable status map to account for branching paths
                 std::map<std::string, bool> loopVars(variables);
-                EliminateDeadCode(node->increment, loopVars, functions) node->increment = node->increment->right;
-                if(EliminateDeadCode(node->body, loopVars, functions)) node->body = std::unique_ptr<ASTStatement>(nullptr);
+                if(EliminateDeadCode(std::move(nodePtr->increment), loopVars, functions)) nodePtr->increment = std::move(dynamic_cast<ASTExpressionAssignment*>(nodePtr->increment.get())->right);
+                if(EliminateDeadCode(std::move(nodePtr->body), loopVars, functions)) nodePtr->body = std::unique_ptr<ASTStatement>(nullptr);
                 // Merge maps, assigning live status to variables that are live in either branch
                 mergeVarMaps(variables, loopVars);
-                if(EliminateDeadCode(node->condition, variables, functions)) node->condition = node->condition->right;
-                if(EliminateDeadCode(node->init, variables, functions)) node->init = std::unique_ptr<ASTStatement>(nullptr);
-                break;
-            case typeid(ASTStatementReturn):
-                if(EliminateDeadCode(node->returnExpression, variables, functions)) node->returnExpression = node->returnExpression->right;
-                break;
-            case typeid(ASTExpressionAddition):
-            case typeid(ASTExpressionSubtraction):
-            case typeid(ASTExpressionMultiplication):
-            case typeid(ASTExpressionDivision):
-            case typeid(ASTExpressionAnd):
-            case typeid(ASTExpressionOr):
-            case typeid(ASTExpressionComparison):
-                if(EliminateDeadCode(node->a1, variables, functions)) node->a1 = node->a1->right;
-                if(EliminateDeadCode(node->a2, variables, functions)) node->a2 = node->a2->right;
-                break;
-            case typeid(ASTExpressionFloat2Int):
-            case typeid(ASTExpressionInt2Float):
-            case typeid(ASTExpressionInt2Bool):
-            case typeid(ASTExpressionBool2Int):
-            case typeid(ASTExpressionNegation):
-                if(EliminateDeadCode(node->operand, variables, functions)) node->operand = node->operand->right;
-                break;
-            case typeid(ASTExpressionCall):
-                // Mark function as called
-                functions.emplace(node->callee->toString(), true);
-                for(int i = node->arguments->size() - 1; i >= 0; i--) {
-                    if(EliminateDeadCode(node->*arguments[i], variables, functions)) node->statements->erase(i);
+                if(EliminateDeadCode(std::move(nodePtr->condition), variables, functions)) nodePtr->condition = std::move(dynamic_cast<ASTExpressionAssignment*>(nodePtr->condition.get())->right);
+                if(EliminateDeadCode(std::move(nodePtr->init), variables, functions)) nodePtr->init = std::unique_ptr<ASTStatement>(nullptr);
+            }
+            else if(dynamic_cast<ASTStatementReturn*>(node.get()) != NULL) {
+                ASTStatementReturn* nodePtr = dynamic_cast<ASTStatementReturn*>(node.get());
+                if(EliminateDeadCode(std::move(nodePtr->returnExpression), variables, functions)) nodePtr->returnExpression = std::move(dynamic_cast<ASTExpressionAssignment*>(nodePtr->returnExpression.get())->right);
+            }
+            else if(dynamic_cast<ASTExpressionAddition*>(node.get()) != NULL) {
+                ASTExpressionAddition* nodePtr = dynamic_cast<ASTExpressionAddition*>(node.get());
+                if(EliminateDeadCode(std::move(nodePtr->a1), variables, functions)) nodePtr->a1 = std::move(dynamic_cast<ASTExpressionAssignment*>(nodePtr->a1.get())->right);
+                if(EliminateDeadCode(std::move(nodePtr->a2), variables, functions)) nodePtr->a2 = std::move(dynamic_cast<ASTExpressionAssignment*>(nodePtr->a2.get())->right);
+            }
+            else if(dynamic_cast<ASTExpressionSubtraction*>(node.get()) != NULL) {
+                ASTExpressionSubtraction* nodePtr = dynamic_cast<ASTExpressionSubtraction*>(node.get());
+                if(EliminateDeadCode(std::move(nodePtr->a1), variables, functions)) nodePtr->a1 = std::move(dynamic_cast<ASTExpressionAssignment*>(nodePtr->a1.get())->right);
+                if(EliminateDeadCode(std::move(nodePtr->a2), variables, functions)) nodePtr->a2 = std::move(dynamic_cast<ASTExpressionAssignment*>(nodePtr->a2.get())->right);
+            }
+            else if(dynamic_cast<ASTExpressionMultiplication*>(node.get()) != NULL) {
+                ASTExpressionMultiplication* nodePtr = dynamic_cast<ASTExpressionMultiplication*>(node.get());
+                if(EliminateDeadCode(std::move(nodePtr->a1), variables, functions)) nodePtr->a1 = std::move(dynamic_cast<ASTExpressionAssignment*>(nodePtr->a1.get())->right);
+                if(EliminateDeadCode(std::move(nodePtr->a2), variables, functions)) nodePtr->a2 = std::move(dynamic_cast<ASTExpressionAssignment*>(nodePtr->a2.get())->right);
+            }
+            else if(dynamic_cast<ASTExpressionDivision*>(node.get()) != NULL) {
+                ASTExpressionDivision* nodePtr = dynamic_cast<ASTExpressionDivision*>(node.get());
+                if(EliminateDeadCode(std::move(nodePtr->a1), variables, functions)) nodePtr->a1 = std::move(dynamic_cast<ASTExpressionAssignment*>(nodePtr->a1.get())->right);
+                if(EliminateDeadCode(std::move(nodePtr->a2), variables, functions)) nodePtr->a2 = std::move(dynamic_cast<ASTExpressionAssignment*>(nodePtr->a2.get())->right);
+            }
+            else if(dynamic_cast<ASTExpressionAnd*>(node.get()) != NULL) {
+                ASTExpressionAnd* nodePtr = dynamic_cast<ASTExpressionAnd*>(node.get());
+                if(EliminateDeadCode(std::move(nodePtr->a1), variables, functions)) nodePtr->a1 = std::move(dynamic_cast<ASTExpressionAssignment*>(nodePtr->a1.get())->right);
+                if(EliminateDeadCode(std::move(nodePtr->a2), variables, functions)) nodePtr->a2 = std::move(dynamic_cast<ASTExpressionAssignment*>(nodePtr->a2.get())->right);
+            }
+            else if(dynamic_cast<ASTExpressionOr*>(node.get()) != NULL) {
+                ASTExpressionOr* nodePtr = dynamic_cast<ASTExpressionOr*>(node.get());
+                if(EliminateDeadCode(std::move(nodePtr->a1), variables, functions)) nodePtr->a1 = std::move(dynamic_cast<ASTExpressionAssignment*>(nodePtr->a1.get())->right);
+                if(EliminateDeadCode(std::move(nodePtr->a2), variables, functions)) nodePtr->a2 = std::move(dynamic_cast<ASTExpressionAssignment*>(nodePtr->a2.get())->right);
+            }
+            else if(dynamic_cast<ASTExpressionComparison*>(node.get()) != NULL) {
+                ASTExpressionComparison* nodePtr = dynamic_cast<ASTExpressionComparison*>(node.get());
+                if(EliminateDeadCode(std::move(nodePtr->a1), variables, functions)) nodePtr->a1 = std::move(dynamic_cast<ASTExpressionAssignment*>(nodePtr->a1.get())->right);
+                if(EliminateDeadCode(std::move(nodePtr->a2), variables, functions)) nodePtr->a2 = std::move(dynamic_cast<ASTExpressionAssignment*>(nodePtr->a2.get())->right);
+            }
+            else if(dynamic_cast<ASTExpressionFloat2Int*>(node.get()) != NULL) {
+                ASTExpressionFloat2Int* nodePtr = dynamic_cast<ASTExpressionFloat2Int*>(node.get());
+                if(EliminateDeadCode(std::move(nodePtr->operand), variables, functions)) nodePtr->operand = std::move(dynamic_cast<ASTExpressionAssignment*>(nodePtr->operand.get())->right);
+            }
+            else if(dynamic_cast<ASTExpressionInt2Float*>(node.get()) != NULL) {
+                ASTExpressionInt2Float* nodePtr = dynamic_cast<ASTExpressionInt2Float*>(node.get());
+                if(EliminateDeadCode(std::move(nodePtr->operand), variables, functions)) nodePtr->operand = std::move(dynamic_cast<ASTExpressionAssignment*>(nodePtr->operand.get())->right);
+            }
+            else if(dynamic_cast<ASTExpressionInt2Bool*>(node.get()) != NULL) {
+                ASTExpressionInt2Bool* nodePtr = dynamic_cast<ASTExpressionInt2Bool*>(node.get());
+                if(EliminateDeadCode(std::move(nodePtr->operand), variables, functions)) nodePtr->operand = std::move(dynamic_cast<ASTExpressionAssignment*>(nodePtr->operand.get())->right);
+            }
+            else if(dynamic_cast<ASTExpressionBool2Int*>(node.get()) != NULL) {
+                ASTExpressionBool2Int* nodePtr = dynamic_cast<ASTExpressionBool2Int*>(node.get());
+                if(EliminateDeadCode(std::move(nodePtr->operand), variables, functions)) nodePtr->operand = std::move(dynamic_cast<ASTExpressionAssignment*>(nodePtr->operand.get())->right);
+            }
+            else if(dynamic_cast<ASTExpressionNegation*>(node.get()) != NULL) {
+                ASTExpressionNegation* nodePtr = dynamic_cast<ASTExpressionNegation*>(node.get());
+                if(EliminateDeadCode(std::move(nodePtr->operand), variables, functions)) nodePtr->operand = std::move(dynamic_cast<ASTExpressionAssignment*>(nodePtr->operand.get())->right);
+            }
+            else if(dynamic_cast<ASTExpressionCall*>(node.get()) != NULL) {
+                ASTExpressionCall* nodePtr = dynamic_cast<ASTExpressionCall*>(node.get());
+                functions.emplace(nodePtr->callee->ToString(""), true);
+                // Iterate through children in reverse order, removing dead assignments
+                for(int i = nodePtr->arguments.size() - 1; i >= 0; i--) {
+                    if(EliminateDeadCode(std::move(nodePtr->arguments[i]), variables, functions)) nodePtr->arguments.erase(nodePtr->arguments.begin()+i);
                 }
-                break;
-            case typeid(ASTExpressionVar):
+            }
+            else if(dynamic_cast<ASTExpressionVariable*>(node.get()) != NULL) {
+                ASTExpressionVariable* nodePtr = dynamic_cast<ASTExpressionVariable*>(node.get());
                 // If variable is already in map, update live status to true, otherwise add it to map
-                if(variables.find(node->var) != variables->end()) {
-                    variables[node->var] = true;
+                if(variables.find(nodePtr->var) != variables.end()) variables[nodePtr->var] = true;
+                else variables.emplace(nodePtr->var, true);
+            }
+            else if(dynamic_cast<ASTExpressionAssignment*>(node.get()) != NULL) {
+                ASTExpressionAssignment* nodePtr = dynamic_cast<ASTExpressionAssignment*>(node.get());
+                // If variable is in map and live, set live status to false but do not remove assignment, otherwise, mark assignment for removal
+                if(variables.find(nodePtr->left->ToString("")) != variables.end() && variables.at(nodePtr->left->ToString(""))) {
+                    variables[nodePtr->left->ToString("")] = false;
+                    if(EliminateDeadCode(std::move(nodePtr->right), variables, functions)) nodePtr->right = std::move(dynamic_cast<ASTExpressionAssignment*>(nodePtr->right.get())->right);
+                    return false;
                 }
-                else {
-                    variables.emplace(node->var->toString(), true);
-                }
-                break;
+                return true;
+            }
+            /*
             case typeid(ASTExpressionAssignment):
                 // If variable is in map and live, set live status to false but do not remove assignment, otherwise, mark assignment for removal
                 if(variables.find(node->left->toString()) != variables->end() && variables->at(node->left->toString())) {
@@ -206,7 +276,7 @@ private:
                 }
                 return true;
                 break;
-        }
+        }*/
         return false;
     }
 
