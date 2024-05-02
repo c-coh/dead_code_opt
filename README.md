@@ -5,6 +5,8 @@ Christopher Danner, cld99
 
 Joey Li, xxl1021
 
+[Copy project description from report]
+
 ## Running the Code
 To easily run new test cases or other inputs, add the appropriate C files to the `tests` folder, navigate to the base directory for the project (either open the project folder in the terminal from file explorer or navigate within the terminal using `cd`), and run `./execute tests.sh`.
 
@@ -16,7 +18,10 @@ Note that the above commands assume that your file to run are in the base direct
 
 ### Required Packages
 Required Packages: **CLANG**, **Make**, **CMake**, **LLVM**, **Flex**, **Bison**, **GraphViz**
+
 If you are missing any of these required packages, refer to 'PG4_README.md' for installation instructions if using Linux.
 
 ## Test Cases
 The primary test cases used for this project were as follows:
+
+[Copy description of test cases from report]
