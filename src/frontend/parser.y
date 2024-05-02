@@ -358,6 +358,8 @@ int main(int argc, char **argv) {
     fclose(yyin);
   }
 
+  ast.DeadCodeEliminationPass();
+
   // Do the compilation.
   ast.Compile();
 
