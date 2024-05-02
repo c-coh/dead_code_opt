@@ -19,7 +19,7 @@ Note that the above commands assume that your file to run are in the base direct
 ### Required Packages
 Required Packages: **CLANG**, **Make**, **CMake**, **LLVM**, **Flex**, **Bison**, **GraphViz**
 
-If you are missing any of these required packages, refer to 'PG4_README.md' for installation instructions if using Linux.
+If you are missing any of these required packages, refer to 'PG4_README.md' for installation instructions (Linux).
 
 ## Test Cases
 The primary test cases used for this project were as follows:
