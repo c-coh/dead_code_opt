@@ -126,12 +126,13 @@ void AST::WriteLLVMBitcodeToFile(const std::string& outFile)
 
 void AST::DeadCodeEliminationPass()
 {
+    // Keep track of function live status.
+    std::map<std::string, bool> funcLive;
+
     for (auto& [name, func] : functions)
     {
         // Keep track of variable live status.
         std::map<std::string, bool> varLive;
-        // Keep track of function live status.
-        std::map<std::string, bool> funcLive;
         // For each defined function, perform dead code elimination on its body
         if(func->definition) {
             // Get body of function and call EliminateDeadCode on it
