@@ -5,11 +5,11 @@ void m1() {
     int d;
     int e;
 
-    for (a = 0, b = 1; a < 0; a++;) {
+    for (a = 0; b = 1; a < 0; a = a + 1;) {
         c = 10;
     }
 
-    for (a = 0, d = 1; a < 1000; a++;) {
+    for (a = 0; d = 1; a < 1000; a = a + 1;) {
         e = 10;
     }
 }
@@ -19,7 +19,7 @@ int m2() {
     int b;
     b = 10;
 
-    for (a = 0; a < 1000; a++;) {
+    for (a = 0; a < 1000; a = a + 1;) {
         b = b + 1;
     }
 
@@ -30,7 +30,7 @@ int m3(int a) {
     int b;
     b = 10;
 
-    for (a = 0; a < 1000; a++;) {
+    for (a = 0; a < 1000; a = a + 1;) {
         b = b + 1;
     }
 
@@ -48,7 +48,7 @@ int main() {
     b = 10;
     c = a + b;
 
-    for (a = 0; a < 1000; a++;) {
+    for (a = 0; a < 1000; a = a + 1;) {
         b = m3(c);
         m2();
         c = c + 1;

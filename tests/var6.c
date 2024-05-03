@@ -1,8 +1,8 @@
 int main() {
     bool condition;
     int unused;
-    condition = 0;
-    if (condition) {
+    condition = false;
+    if (condition == false) {
     } else {
         unused = 123;
     }
