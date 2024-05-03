@@ -1,6 +1,7 @@
 int m(int a) {
+    int b;
     if (a != 10) {
-        int b = 10;
+        b = 10;
     }
     return a;
 }

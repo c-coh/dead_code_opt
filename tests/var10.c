@@ -1,6 +1,9 @@
 int main(float d) {
-    float a = 1;
-    float b = 2;
-    float c = 3; 
+    float a;
+    float b;
+    float c;
+    a = 1;
+    b = 2;
+    c = 3;
     return a;
 }

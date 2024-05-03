@@ -1,9 +1,13 @@
 
 int function() {
-    int a = 1;
-    int b = 2;
-    int c = 3; 
-    return 0;}
+    int a;
+    int b;
+    int c;
+    a = 1;
+    b = 2;
+    c = 3; 
+    return 0;
+}
 
 int main() {
     return function();
