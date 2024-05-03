@@ -25,5 +25,11 @@ If you are missing any of these required packages, refer to 'PG4_README.md' for 
 
 ## Test Cases
 The primary test cases used for this project were as follows:
+Variables declared and assigned but not used in function body.
+Variables declared and assigned but not used in if-else statement.
+Variables declared and assigned but not used in for loop body.
+Variables declared and assigned but not used in for loop declaration.
+Variables declared and assigned but not used in function which was invoked by another function.
+Function invokded but return value ignored.
 
 [Copy description of test cases from report]
