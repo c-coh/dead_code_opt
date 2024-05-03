@@ -1,5 +1,5 @@
 int main() {
-    int condition;
+    bool condition;
     int unused;
     condition = 0;
     if (condition) {

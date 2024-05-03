@@ -1,4 +1,3 @@
-
 void function() {
     int local;
     local = 20;

@@ -77,7 +77,7 @@ private:
     // node: Pointer to starting node.
     // variables: Pointer to variable live status map.
     // functions: Pointer to function live status map.
-    bool EliminateDeadCode(std::unique_ptr<ASTStatement> node, std::map<std::string, bool>& variables, std::map<std::string, bool>& functions);
+    bool EliminateDeadCode(ASTStatement* node, std::map<std::string, bool>& variables, std::map<std::string, bool>& functions);
 
     // Merge second map into first, taking map1.bool = map1.bool || map2.bool for duplicate keys
     // map1: Map to be merged into
