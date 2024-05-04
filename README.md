@@ -8,7 +8,7 @@ Joey Li, xxl1021
 [Copy project description from report]
 
 ## Running the Code
-To easily run new test cases or other inputs, add the appropriate C files to the `tests` folder, navigate to the base directory for the project (either open the project folder in the terminal from file explorer or navigate within the terminal using `cd`), and run `./execute tests.sh`.
+To easily run new test cases or other inputs, add the appropriate C files to the `tests` folder, navigate to the base directory for the project (either open the project folder in the terminal from file explorer or navigate within the terminal using `cd`), and run `./execute tests.sh`. Note that if the `./build.sh` scipt does not work on your computer, you will need to build the files manually by following a process similar to that outlined in `./build.sh` or `PG4_README.md`.
 
 To run a file independently, use `./run.sh -i filename.c -fAsm -o filename.ll &> filename.log` to obtain the compiled LLVM IR file for the C program (`filename.ll`) and a log file showing the console output - including the AST - for the program (`filename.log`). You can omit `&> filename.log` to instead print the output to the console.
 

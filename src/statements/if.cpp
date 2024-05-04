@@ -57,7 +57,7 @@ void ASTStatementIf::Compile(llvm::Module& mod, llvm::IRBuilder<>& builder, ASTF
 std::string ASTStatementIf::ToString(const std::string& prefix)
 {
     std::string output = "if\n" + prefix + "├──" + condition->ToString(prefix + "│  ");
-    output += prefix + (elseStatement ? "├──" : "└──") + thenStatement->ToString(prefix + "   ");
+    output += prefix + (elseStatement ? "├──" : "└──") + thenStatement->ToString(prefix + (elseStatement ? "│  " : "   "));
     if (elseStatement) output += prefix + "└──" + elseStatement->ToString(prefix + "   ");
     return output;
 }

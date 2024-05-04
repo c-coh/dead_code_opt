@@ -81,9 +81,16 @@ private:
     // eliminate: Whether to eliminate dead variables or just update live status
     bool EliminateDeadCode(ASTStatement* node, std::map<std::string, bool>& variables, std::map<std::string, bool>& functions, bool eliminate);
 
+    // Remove an assignment statement
+    // node: Node of assignment to remove
+    void EliminateAssignmentStmt(std::unique_ptr<ASTStatement>& node);
+
+    // Perform unreachable code elimination at designated control-flow node.
+    // node: Pointer to node.
     void EliminateUnreachableCode(ASTStatement* node);
 
-    // Function to evaluate a condition to determine if it's always true or always false
+    // Evaluate a condition to identify always-true and always-false conditions
+    // condition: Pointer to condition to evaluate
     int EvaluateExpression(ASTExpression* condition);
 
     // Merge second map into first, taking map1.bool = map1.bool || map2.bool for duplicate keys

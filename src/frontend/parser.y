@@ -366,8 +366,6 @@ int main(int argc, char **argv) {
   // Print AST if needed.
   if (printAST) std::cout << ast.ToString() << std::endl;
 
-  std::cout << "Successfully printed AST" << std::endl;
-
   // Export data.
   if (outputFormat == 0)
   {
