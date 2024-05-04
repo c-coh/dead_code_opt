@@ -37,10 +37,14 @@ void ASTStatementIf::Compile(llvm::Module& mod, llvm::IRBuilder<>& builder, ASTF
     // Make jumps to blocks.
     builder.CreateCondBr(cond, thenBlock, elseBlock ? elseBlock : contBlock); // Use else as false if exists, otherwise go to continuation.
 
-    // Compile the then block and then jump to continuation block.
-    builder.SetInsertPoint(thenBlock);
-    thenStatement->Compile(mod, builder, func);
-    if (!thenStatement->StatementReturnType(func)) builder.CreateBr(contBlock); // Only create branch if no return encountered.
+    // Compile the then block (if applicable) and then jump to continuation block.
+    // Compile the else block if applicable.
+    if (thenBlock)
+    {
+        builder.SetInsertPoint(thenBlock);
+        thenStatement->Compile(mod, builder, func);
+        if (!thenStatement->StatementReturnType(func)) builder.CreateBr(contBlock); // Only create branch if no return encountered.
+    }
 
     // Compile the else block if applicable.
     if (elseBlock)

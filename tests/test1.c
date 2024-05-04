@@ -1,19 +1,25 @@
-int function()
+int printf(string fmt, ...);
+
+float add(int a, float b)
 {
-    int a;
-    int b;
-    int c;
-    a = 1;
-    b = 2;
-    c = 3; 
-    return 0;
+    return a + b;
 }
 
 int main()
 {
     int a;
-    int b;
-    b = 10;
-    a = function();
-    return b;
+    float b;
+    float c;
+    int d;
+    a = 1;
+    b = a;
+    c = b;
+    d = 2;
+    if(b > c);
+    printf("%f\n", add(d, c));
+    a = 1;
+    b = 1.0;
+    c = 2.3;
+    d = 4;
+    return d;
 }

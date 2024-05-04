@@ -3,7 +3,7 @@
 function runTest {
     ./run.sh -i new-tests/$1.c -fAsm -o new-tests/$1.ll &> new-tests/$1.log
     # lli new-tests/$1.ll &> new-tests/$1Execution.log
-    # llvm-as new-tests/$1.ll -o new-tests/$1.bc &> new-tests/$1Bytecode.log
+    llvm-as new-tests/$1.ll -o new-tests/$1.bc &> new-tests/$1Bytecode.log
 }
 
 # Run all the C file tests.

@@ -24,20 +24,77 @@ Required Packages: **CLANG**, **Make**, **CMake**, **LLVM**, **Flex**, **Bison**
 If you are missing any of these required packages, refer to 'PG4_README.md' for installation instructions (Linux).
 
 ## Test Cases
-The primary test cases used for this project were as follows:
-var1: Variable declared and assigned but never used in function body
-var2: Variable declared, assigned, and used outside if-else statment but code finished inside if statment and the only usage of the variable cannot be reach
-var3: Variable declared and assigned inside if-else statment but never used
-var4: Variable declared and assigned inside for loop but never used
-var5: Multiple variables declared and assigned but never used in function body
-var6: Variable declared outside if-else statment and assigned inside if-else statment but never used
-var7: Variable declared and assigned inside for-loop header but never used
-var8: Multiple variables declared and assigned outside and inside for-loop body and header but not used
-var9: Variable declared and assigned in different for-loop body but neither used
-var10: Multiple variables with different types declared and assigned but never used in function body
-var11: Variable assigned inside if-else statment but never used in one branch
-var12: Variable assigned inside while loop but never used
-
-Variables declared and assigned but not used in for loop declaration.
-Variables declared and assigned but not used in function which was invoked by another function.
-Function invoked but return value ignored.
+test1:
+    Tested variable uses in all major classes of nodes without dataflow complexities
+    Classes of Nodes Tested:
+        Statement blocks
+        Return statements
+        Binary expressions (addition, subtraction, multiplication, division, and, or, comparison)
+        Unary expressions (int to float, float to int, int to bool, bool to int, negation)
+        Function calls
+        Assignment statements
+    Relevant Lines:
+        Line 15: Variable use in unary expression (int to float)
+        Line 16: Variable use in assignment
+        Line 18: Variable use in binary expression (comparison)
+        Line 19: Variable use in function call
+        Line 24: Variable use in return statement
+test2:
+    Tested dead variables in all major classes of nodes without dataflow complexities
+    Classes of Nodes Tested:
+        Statement blocks
+        Return statements
+        Binary expressions (addition, subtraction, multiplication, division, and, or, comparison)
+        Unary expressions (int to float, float to int, int to bool, bool to int, negation)
+        Function calls
+        Assignment statements
+    Relevant Lines:
+        Line 13: Dead assignment in statement block
+        Line 14: Dead assignment in binary expression (addition)
+        Line 15: Dead assignment in assignment statement
+        Line 16: Dead assignment in unary operator (int to float)
+        Line 17: Dead assignment in function call
+        Line 18: Dead assignment in return statement
+test3:
+    Tested variables dead through one and through all dataflow paths of if statements
+    Tested variables dead through for loop body execution only and through all dataflow paths
+    Tested variables dead through for loop body execution only and through all dataflow paths
+    Relevant Lines:
+        Line 13: Variable dead through one dataflow path only (then)
+        Line 18: Variable dead through all dataflow paths (reassigned after if statement)
+        Line 20: Dead assignment in if statement
+        Line 24: Variable dead through one dataflow path only (else)
+        Line 30: Variable dead through all dataflow paths (then and else)
+        Line 38: Variable dead through for loop body only
+        Line 43: Variable dead on all paths through for loop
+        Line 45: Dead assignment in for loop
+        Line 49: Variable dead through while loop body only
+        Line 56: Variable dead on all paths through while loop
+        Line 59: Dead assignment in while loop
+test4:
+    Tested unreachable code in if, for, and while statements
+    Relevant Lines:
+        Line 7: Reachable code with always-true if statement condition
+        Line 10: Unreachable code with always-true if statement condition
+        Line 14: Unreachable code with always-false if statement condition
+        Line 17: Reachable code with always-false if statement condition
+        Line 21: Reachable code with indeterminate if statement condition
+        Line 24: Reachable code with indeterminate if statement condition
+        Line 27: True or expression in conditional
+        Line 28: Reachable code with always-true while loop condition
+        Line 31: False and expression in conditional
+        Line 32: Unreachable code with always-false while loop condition
+        Line 36: Indeterminate or expression in conditional
+        Line 36: Reachable code with indeterminate while loop condition
+        Line 39: True and expression in conditional
+        Line 40: Reachable code with always-true for loop condition
+        Line 43: False or expression in conditional
+        Line 44: Unreachable code with always-false for loop condition
+        Line 47: Indeterminate and expression in conditional
+        Line 48: Reachable code with indeterminate for loop condition
+    Note: Due to checking for an always-true loop condition, test case should be compiled but not run
+test5:
+    Tested corner cases such as dead assignments with function calls or live assignments as their right-hand side
+    Relevant Lines:
+        Line 14: Dead assignment with essential function call as right-hand side
+        Line 15: Dead assignment with live assignment as right-hand side
