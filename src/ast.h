@@ -80,7 +80,7 @@ private:
     // functions: Pointer to function live status map.
     bool EliminateDeadCode(ASTStatement* node, std::map<std::string, bool>& variables, std::map<std::string, bool>& functions);
 
-    bool EliminateUnreachableCode(ASTStatement* node);
+    void EliminateUnreachableCode(ASTStatement* node);
 
     // Function to evaluate a condition to determine if it's always true or always false
     int EvaluateExpression(ASTExpression* condition);
