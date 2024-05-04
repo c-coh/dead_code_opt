@@ -12,6 +12,8 @@ int function()
 int main()
 {
     int a;
+    int b;
+    b = 10;
     a = function();
     return b;
 }
