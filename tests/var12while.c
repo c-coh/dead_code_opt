@@ -1,12 +1,12 @@
-int m() {
+int m(int c) {
     int i;
     int b;
     int a;
-    a = 10;
-    for (i = 0; i < 5; i = i + 1;) 
-    {
+    i = 0;
+    while (i < 5) {
         b = 10;
         a = 10;
+        i = i + 1;
     }
     return a;
 }
