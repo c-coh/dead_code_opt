@@ -27,13 +27,13 @@ int nothing(int a, int b)
 {
     int c;
     int i;
+    int j;
     i = 0;
 
     while (i < 10000) {
         i = i + 1;
         c = c + 1;
 
-        int j;
         j = 0;
 
         while (j < 10000) {
