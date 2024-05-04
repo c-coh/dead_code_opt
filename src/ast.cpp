@@ -155,7 +155,7 @@ void AST::DeadCodeEliminationPass()
             }
         }
         else if(dynamic_cast<ASTStatementIf*>(node) != NULL) {
-            //EliminateUnreachableCode(node);
+            EliminateUnreachableCode(node);
             ASTStatementIf* nodePtr = dynamic_cast<ASTStatementIf*>(node);
             // Set up duplicate variable status map to account for branching paths
             std::map<std::string, bool> elseVars(variables);
@@ -296,7 +296,7 @@ void AST::EliminateUnreachableCode(ASTStatement* node) {
             //expression is always true; 'else' is unreachable
             nodePtr->elseStatement = std::unique_ptr<ASTStatement>(nullptr);
         }
-        else{
+        else if(condVal == 0) {
             //expression is always false; 'then' is unreachable
             nodePtr->thenStatement = std::unique_ptr<ASTStatement>(nullptr);
         }
