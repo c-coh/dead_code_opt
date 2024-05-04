@@ -34,7 +34,9 @@ var6: Variable declared outside if-else statment and assigned inside if-else sta
 var7: Variable declared and assigned inside for-loop header but never used\
 var8: Multiple variables declared and assigned outside and inside for-loop body and header but not used\
 var9: Variable declared and assigned in different for-loop body but neither used\
-var10: Multiple variables with different types declared and assigned but never used in function body
+var10: Multiple variables with different types declared and assigned but never used in function body\
+var11: Variable assigned inside if-else statment but never used in one branch\
+var12: Variable assigned inside while loop but never used
 
 Variables declared and assigned but not used in for loop declaration.
 Variables declared and assigned but not used in function which was invoked by another function.
