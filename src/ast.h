@@ -1,6 +1,7 @@
 #pragma once
 
 #include "function.h"
+#include "expression.h"
 #include "scopeTable.h"
 #include <llvm/IR/IRBuilder.h>
 #include <llvm/IR/LegacyPassManager.h>
@@ -82,7 +83,7 @@ private:
     bool EliminateUnreachableCode(ASTStatement* node);
 
     // Function to evaluate a condition to determine if it's always true or always false
-    bool EvaluateExpression(ASTExpression* condition);
+    int EvaluateExpression(ASTExpression* condition);
 
     // Merge second map into first, taking map1.bool = map1.bool || map2.bool for duplicate keys
     // map1: Map to be merged into

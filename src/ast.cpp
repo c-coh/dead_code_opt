@@ -1,5 +1,6 @@
 #include "ast.h"
 #include "function.h"
+#include "expression.h"
 #include "statements/block.h"
 #include "statements/for.h"
 #include "statements/if.h"
@@ -389,7 +390,7 @@ int EvaluateExpression(ASTExpression* expr) {
     } else if (dynamic_cast<ASTExpressionBool*>(expr) != nullptr) {
 
         ASTExpressionBool* boolExpr = dynamic_cast<ASTExpressionBool*>(expr);
-        return static_cast<int>((*boolExpr).value)
+        return static_cast<int>((*boolExpr).value);
 
     //NEGATION EXPRESSION
     } else if (dynamic_cast<ASTExpressionNegation*>(expr) != nullptr) {
