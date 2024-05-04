@@ -5,11 +5,11 @@ void m1() {
     int d;
     int e;
 
-    for (a = 0; b = 1; a < 0; a = a + 1;) {
+    for (a = b = 0; a < 0; a = a + 1;) {
         c = 10;
     }
 
-    for (a = 0; d = 1; a < 1000; a = a + 1;) {
+    for (d = a = 0; a < 1000; a = a + 1;) {
         e = 10;
     }
 }
