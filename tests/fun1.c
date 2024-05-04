@@ -1,9 +1,11 @@
-void function() {
+void function()
+{
     int local;
     local = 20;
 }
 
-int main() {
+int main()
+{
     function();
     return 0;
 }
