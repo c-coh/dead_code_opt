@@ -78,7 +78,8 @@ private:
     // node: Pointer to starting node.
     // variables: Pointer to variable live status map.
     // functions: Pointer to function live status map.
-    bool EliminateDeadCode(ASTStatement* node, std::map<std::string, bool>& variables, std::map<std::string, bool>& functions);
+    // eliminate: Whether to eliminate dead variables or just update live status
+    bool EliminateDeadCode(ASTStatement* node, std::map<std::string, bool>& variables, std::map<std::string, bool>& functions, bool eliminate);
 
     void EliminateUnreachableCode(ASTStatement* node);
 
