@@ -47,10 +47,6 @@ int main()
     }
 
     b = 10;
-
-    if (b > 10) {
-        return 10;
-    }
     a = 0;
     while (a < 10000) {
         c = c * 1;

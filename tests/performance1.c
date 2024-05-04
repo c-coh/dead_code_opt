@@ -19,7 +19,7 @@ int add(int a, int b)
         }
     }
 
-    return a + b;
+    return a + b + c;
 }
 
 int nothing(int a, int b)
@@ -51,11 +51,13 @@ int main()
     int c;
     int d;
     int e;
+    int f;
 
     a = 0;
     b = 0;
     c = 0;
     d = 0;
+    f = 0;
 
     while (a < 10000) {
         c = 0;
@@ -91,8 +93,12 @@ int main()
     b = 10;
 
     if (b > 10) {
-        return 10;
+        f = 1;
     }
+    else {
+        e = 1;
+    }    
+    
     a = 0;
     while (a < 10000) {
         c = c * 1;
