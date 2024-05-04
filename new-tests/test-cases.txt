@@ -1,0 +1,31 @@
+Test eliminating assignments from all major classes of nodes (expressions and statements)
+Test variable uses in various types of dataflow structures
+Test unreachable code in if, for, and while statements
+
+Tests:
+    test1:
+        Tested variable uses in all major classes of nodes without dataflow complexities
+            Classes Tested:
+                Statement blocks
+                Return statements
+                Binary expressions (addition, subtraction, multiplication, division, and, or, comparison)
+                Unary expressions (int to float, float to int, int to bool, bool to int, negation)
+                Function calls
+                Assignment statements
+    test2:
+        Tested dead variables in all major classes of nodes without dataflow complexities
+            Classes Tested:
+                Statement blocks
+                Return statements
+                Binary expressions (addition, subtraction, multiplication, division, and, or, comparison)
+                Unary expressions (int to float, float to int, int to bool, bool to int, negation)
+                Function calls
+                Assignment statements
+    test3:
+        Tested variables dead through one and through all dataflow paths of if statements
+        Tested variables dead through for loop body execution only and through all dataflow paths
+        Tested variables dead through for loop body execution only and through all dataflow paths
+    test4:
+        Tested unreachable code in if, for, and while statements
+    test5:
+        Tested corner cases such as dead assignments with function calls or assignments as their right-hand side
