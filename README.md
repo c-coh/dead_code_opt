@@ -25,9 +25,17 @@ If you are missing any of these required packages, refer to 'PG4_README.md' for 
 
 ## Test Cases
 The primary test cases used for this project were as follows:
-Variables declared and assigned but not used in function body.
-Variables declared and assigned but not used in if-else statement.
-Variables declared and assigned but not used in for loop body.
+var1: Variable declared and assigned but not used in function body
+var2: Variable declared and assigned outside if statment but cannot be reach
+var3: Variable declared and assigned inside if statment but not used
+var4: Variable declared and assigned inside for loop but not used
+var5: Multiple variables declared and assigned but not used in function body
+var6: Variable declared and assigned outside if statment but cannot be reach
+var7: Variable declared and assigned inside for header but not used
+var8: Multiple variables declared and assigned both outside and inside for loop but not used
+var9: Variable declared and assigned in different for loop but not used
+var10: Multiple variables with different types declared and assigned but not used in function body
+
 Variables declared and assigned but not used in for loop declaration.
 Variables declared and assigned but not used in function which was invoked by another function.
 Function invokded but return value ignored.

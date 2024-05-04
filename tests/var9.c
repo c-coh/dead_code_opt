@@ -6,7 +6,7 @@ int m(int a) {
     }
     for (i = 0; i < 0; i = i + 1;) {
         b = 10;
-        return b;
+        return a;
     }    
     return a;
 }

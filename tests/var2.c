@@ -6,5 +6,9 @@ int main() {
         b = 10;
         return b;
     }
+    else {
+        return 0;
+    }
+    
     return a;
 }
