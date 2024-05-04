@@ -68,10 +68,10 @@ int main()
     }
 
     if (a > 0) {
-    int i;
-    int j;
-    i = 0;
-    j = 0;
+        int i;
+        int j;
+        i = 0;
+        j = 0;
 
         while (i < 10000) {
             j = 0;
