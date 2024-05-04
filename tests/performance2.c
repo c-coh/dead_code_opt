@@ -9,9 +9,6 @@ int add(int a, int b)
     while (i < 10000) {
         i = i + 1;
         c = c + 1;
-
-        int j;
-        j = 0;
     }
 
     return a + b;
@@ -24,6 +21,8 @@ int main()
     int c;
     int d;
     int e;
+    int i;
+    int j;
 
     a = 0;
     b = 0;
@@ -36,8 +35,6 @@ int main()
     }
 
     if (a > 0) {
-        int i;
-        int j;
         i = 0;
         j = 0;
     } 

@@ -4,13 +4,14 @@ int add(int a, int b)
 {
     int c;
     int i;
+    int j;
+
     i = 0;
 
     while (i < 10000) {
         i = i + 1;
         c = c + 1;
 
-        int j;
         j = 0;
 
         while (j < 10000) {
@@ -52,6 +53,8 @@ int main()
     int d;
     int e;
     int f;
+    int i;
+    int j;
 
     a = 0;
     b = 0;
@@ -70,8 +73,6 @@ int main()
     }
 
     if (a > 0) {
-        int i;
-        int j;
         i = 0;
         j = 0;
 
