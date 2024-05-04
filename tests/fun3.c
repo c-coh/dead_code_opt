@@ -1,4 +1,5 @@
-void function() {
+void function()
+{
     int i;
     int b;
     for (i = 0; i < 5; i = i + 1;) {
@@ -6,7 +7,8 @@ void function() {
     }
 }
 
-int main() {
+int main()
+{
     function();
     return 0;
 }
