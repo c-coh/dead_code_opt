@@ -1,12 +1,12 @@
 int printf(string fmt, ...);
 
-int add(int a, int b)
+int add(int a, int b, int k)
 {
     int c;
     int i;
     i = 0;
 
-    while (i < 10000) {
+    while (i < k) {
         i = i + 1;
         c = c + 1;
     }
@@ -14,7 +14,7 @@ int add(int a, int b)
     return a + b;
 }
 
-int main()
+int main(int k)
 {
     int a;
     int b;
@@ -29,7 +29,7 @@ int main()
     c = 0;
     d = 0;
 
-    while (a < 10000) {
+    while (a < k) {
         c = 0;
         a = a + 1;
     }
@@ -45,9 +45,9 @@ int main()
 
     b = 10;
     a = 0;
-    while (a < 10000) {
+    while (a < k) {
         c = c * 1;
     }
 
-    return e + add(0, 0);
+    return e + add(0, 0, k);
 }
