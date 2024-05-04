@@ -9,6 +9,7 @@
 #include "expressions/and.h"
 #include "expressions/assignment.h"
 #include "expressions/bool2Int.h"
+#include "expressions/bool.h"
 #include "expressions/call.h"
 #include "expressions/comparison.h"
 #include "expressions/division.h"
@@ -307,68 +308,68 @@ void AST::DeadCodeEliminationPass()
         return false;
 }
 
-bool EliminateUnreachableCode(std::unique_ptr<ASTStatement>& node) {
+bool EliminateUnreachableCode(ASTStatement* node) {
     
     //IF STATEMENT
-    if (dynamic_cast<ASTStatementIf*>(node.get()) != nullptr) {
-        ASTStatementIf* nodePtr = dynamic_cast<ASTStatementIf*>(node.get());
+    if (dynamic_cast<ASTStatementIf*>(node) != nullptr) {
+        ASTStatementIf* nodePtr = dynamic_cast<ASTStatementIf*>(node);
 
         std::unique_ptr<ASTExpression> condition = std::move(nodePtr->condition);
-        int condVal = EvaluateExpression(std::move(condition));
+        int condVal = EvaluateExpression(std::move(condition.get()));
 
         //check for always-true or always-false conditionals
         if (condVal == 2) {
             //expression is not guaranteed true or false
-            EliminateUnreachableCode(nodePtr->thenStatement);
-            EliminateUnreachableCode(nodePtr->elseStatement);
+            EliminateUnreachableCode(nodePtr->thenStatement.get());
+            EliminateUnreachableCode(nodePtr->elseStatement.get());
 
         } else if(condVal == 1) {
             //expression is always true; 'else' is unreachable
-            EliminateUnreachableCode(nodePtr->thenStatement);
+            EliminateUnreachableCode(nodePtr->thenStatement.get());
             nodePtr->elseStatement = nullptr;
         }
         else{
             //expression is always false; 'then' is unreachable
             nodePtr->thenStatement = nullptr;
-            EliminateUnreachableCode(nodePtr->elseStatement);
+            EliminateUnreachableCode(nodePtr->elseStatement.get());
         }
     //FOR STATEMENT
-    } else if (dynamic_cast<ASTStatementFor*>(node.get()) != nullptr) {
-        ASTStatementFor* nodePtr = dynamic_cast<ASTStatementFor*>(node.get());
+    } else if (dynamic_cast<ASTStatementFor*>(node) != nullptr) {
+        ASTStatementFor* nodePtr = dynamic_cast<ASTStatementFor*>(node);
 
         //check for always-true or always-false conditionals
         std::unique_ptr<ASTExpression> condition = std::move(nodePtr->condition);
-        int condVal = EvaluateExpression(std::move(condition));
+        int condVal = EvaluateExpression(std::move(condition.get()));
 
         if (condVal == 0) {
             // Loop condition is false or not determinable, loop body is unreachable
             nodePtr->body = nullptr;
         } else {
             // Loop body is reachable
-            EliminateUnreachableCode(nodePtr->body);
+            EliminateUnreachableCode(nodePtr->body.get());
         }
     //WHILE STATEMENT
-    } else if (dynamic_cast<ASTStatementWhile*>(node.get()) != nullptr) {
+    } else if (dynamic_cast<ASTStatementWhile*>(node) != nullptr) {
 
-        ASTStatementWhile* nodePtr = dynamic_cast<ASTStatementWhile*>(node.get());
+        ASTStatementWhile* nodePtr = dynamic_cast<ASTStatementWhile*>(node);
 
         // Evaluate the condition expression
         std::unique_ptr<ASTExpression> condition = std::move(nodePtr->condition);
-        int condVal = EvaluateExpression(std::move(condition));
+        int condVal = EvaluateExpression(std::move(condition.get()));
 
         if (condVal == 0) {
             // Loop condition is false or not determinable, loop body is unreachable
             nodePtr->thenStatement = nullptr;
         } else {
             // Loop body is reachable
-            EliminateUnreachableCode(nodePtr->thenStatement);
+            EliminateUnreachableCode(nodePtr->thenStatement.get());
         }
 
     //OTHER STATEMENTS
-    } else if (dynamic_cast<ASTStatementBlock*>(node.get()) != nullptr) {
-        ASTStatementBlock* nodePtr = dynamic_cast<ASTStatementBlock*>(node.get());
+    } else if (dynamic_cast<ASTStatementBlock*>(node) != nullptr) {
+        ASTStatementBlock* nodePtr = dynamic_cast<ASTStatementBlock*>(node);
         for (auto& stmt : nodePtr->statements) {
-            EliminateUnreachableCode(stmt);
+            EliminateUnreachableCode(stmt.get());
         }
     }
 
@@ -376,25 +377,25 @@ bool EliminateUnreachableCode(std::unique_ptr<ASTStatement>& node) {
 }
 
 // Helper function to evaluate an expression
-int EvaluateExpression(std::unique_ptr<ASTExpression>& expr) {
+int EvaluateExpression(ASTExpression* expr) {
     
     //VARIABLE EXPRESSION
-    if (dynamic_cast<ASTExpressionVariable*>(expr.get()) != nullptr) {
+    if (dynamic_cast<ASTExpressionVariable*>(expr) != nullptr) {
 
         //no procedure to handle var expressions at the moment
         return 2;
 
     //BOOLEAN EXPRESSION
-    } else if (dynamic_cast<ASTExpressionBool*>(expr.get()) != nullptr) {
+    } else if (dynamic_cast<ASTExpressionBool*>(expr) != nullptr) {
 
-        ASTExpressionBool* boolExpr = dynamic_cast<ASTExpressionBool*>(expr.get());
-        return static_cast<int>boolExpr*.value
+        ASTExpressionBool* boolExpr = dynamic_cast<ASTExpressionBool*>(expr);
+        return static_cast<int>((*boolExpr).value)
 
     //NEGATION EXPRESSION
-    } else if (dynamic_cast<ASTExpressionNegation*>(expr.get()) != nullptr) {
+    } else if (dynamic_cast<ASTExpressionNegation*>(expr) != nullptr) {
 
-        ASTExpressionNegation* negExpr = dynamic_cast<ASTExpressionNegation*>(expr.get());
-        auto result = EvaluateExpression(negExpr->operand);
+        ASTExpressionNegation* negExpr = dynamic_cast<ASTExpressionNegation*>(expr);
+        auto result = EvaluateExpression(negExpr->operand.get());
 
         if(result == 2){
             return 2;
@@ -407,11 +408,11 @@ int EvaluateExpression(std::unique_ptr<ASTExpression>& expr) {
         }
 
     //AND EXPRESSION
-    } else if (dynamic_cast<ASTExpressionAnd*>(expr.get()) != nullptr) {
+    } else if (dynamic_cast<ASTExpressionAnd*>(expr) != nullptr) {
 
-        ASTExpressionAnd* andExpr = dynamic_cast<ASTExpressionAnd*>(expr.get());
-        auto left = EvaluateExpression(andExpr->a1);
-        auto right = EvaluateExpression(andExpr->a2);
+        ASTExpressionAnd* andExpr = dynamic_cast<ASTExpressionAnd*>(expr);
+        auto left = EvaluateExpression(andExpr->a1.get());
+        auto right = EvaluateExpression(andExpr->a2.get());
     
         if(!(left && right) || left == 2 || right == 2){
             return 2;
@@ -426,11 +427,11 @@ int EvaluateExpression(std::unique_ptr<ASTExpression>& expr) {
         }
 
     //OR EXPRESSION
-    } else if (dynamic_cast<ASTExpressionOr*>(expr.get()) != nullptr) {
+    } else if (dynamic_cast<ASTExpressionOr*>(expr) != nullptr) {
 
-        ASTExpressionOr* orExpr = dynamic_cast<ASTExpressionOr*>(expr.get());
-        auto left = EvaluateExpression(orExpr->a1);
-        auto right = EvaluateExpression(orExpr->a2);
+        ASTExpressionOr* orExpr = dynamic_cast<ASTExpressionOr*>(expr);
+        auto left = EvaluateExpression(orExpr->a1.get());
+        auto right = EvaluateExpression(orExpr->a2.get());
 
         if(!(left && right) || left == 2 || right == 2){
             return 2;
@@ -443,10 +444,10 @@ int EvaluateExpression(std::unique_ptr<ASTExpression>& expr) {
             return 0;
         }
     } 
-    else if (dynamic_cast<ASTExpressionComparison*>(expr.get()) != nullptr) {
-        ASTExpressionComparison* compExpr = dynamic_cast<ASTExpressionComparison*>(expr.get());
-        auto left = compExpr->a1;
-        auto right = compExpr->a2;
+    else if (dynamic_cast<ASTExpressionComparison*>(expr) != nullptr) {
+        ASTExpressionComparison* compExpr = dynamic_cast<ASTExpressionComparison*>(expr);
+        auto left = compExpr->a1.get();
+        auto right = compExpr->a2.get();
 
         // if (left && right) {
         //     switch (compExpr->op) {

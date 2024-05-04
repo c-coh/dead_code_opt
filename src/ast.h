@@ -79,10 +79,10 @@ private:
     // functions: Pointer to function live status map.
     bool EliminateDeadCode(ASTStatement* node, std::map<std::string, bool>& variables, std::map<std::string, bool>& functions);
 
-    bool EliminateUnreachableCode(std::unique_ptr<ASTStatement> node);
+    bool EliminateUnreachableCode(ASTStatement* node);
 
     // Function to evaluate a condition to determine if it's always true or always false
-    bool EvaluateExpression(std::unique_ptr<ASTExpression> condition);
+    bool EvaluateExpression(ASTExpression* condition);
 
     // Merge second map into first, taking map1.bool = map1.bool || map2.bool for duplicate keys
     // map1: Map to be merged into
