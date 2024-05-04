@@ -309,8 +309,73 @@ void AST::DeadCodeEliminationPass()
         return false;
 }
 
+bool AST::EliminateUnreachableCode(ASTStatement* node) {
+    
+    //IF STATEMENT
+    if (dynamic_cast<ASTStatementIf*>(node) != nullptr) {
+        ASTStatementIf* nodePtr = dynamic_cast<ASTStatementIf*>(node);
+
+        int condVal = EvaluateExpression(nodePtr->condition.get());
+
+        //check for always-true or always-false conditionals
+        if (condVal == 2) {
+            //expression is not guaranteed true or false
+            EliminateUnreachableCode(nodePtr->thenStatement.get());
+            EliminateUnreachableCode(nodePtr->elseStatement.get());
+
+        } else if(condVal == 1) {
+            //expression is always true; 'else' is unreachable
+            EliminateUnreachableCode(nodePtr->thenStatement.get());
+            nodePtr->elseStatement = std::unique_ptr<ASTStatement>(nullptr);
+        }
+        else{
+            //expression is always false; 'then' is unreachable
+            nodePtr->thenStatement = std::unique_ptr<ASTStatement>(nullptr);
+            EliminateUnreachableCode(nodePtr->elseStatement.get());
+        }
+    //FOR STATEMENT
+    } else if (dynamic_cast<ASTStatementFor*>(node) != nullptr) {
+        ASTStatementFor* nodePtr = dynamic_cast<ASTStatementFor*>(node);
+
+        //check for always-true or always-false conditionals
+        int condVal = EvaluateExpression(nodePtr->condition.get());
+
+        if (condVal == 0) {
+            // Loop condition is false or not determinable, loop body is unreachable
+            nodePtr->body = std::unique_ptr<ASTStatement>(nullptr);
+        } else {
+            // Loop body is reachable
+            EliminateUnreachableCode(nodePtr->body.get());
+        }
+    //WHILE STATEMENT
+    } else if (dynamic_cast<ASTStatementWhile*>(node) != nullptr) {
+
+        ASTStatementWhile* nodePtr = dynamic_cast<ASTStatementWhile*>(node);
+
+        // Evaluate the condition expression
+        int condVal = EvaluateExpression(nodePtr->condition.get());
+
+        if (condVal == 0) {
+            // Loop condition is false or not determinable, loop body is unreachable
+            nodePtr->thenStatement = std::unique_ptr<ASTStatement>(nullptr);
+        } else {
+            // Loop body is reachable
+            EliminateUnreachableCode(nodePtr->thenStatement.get());
+        }
+
+    //OTHER STATEMENTS
+    } else if (dynamic_cast<ASTStatementBlock*>(node) != nullptr) {
+        ASTStatementBlock* nodePtr = dynamic_cast<ASTStatementBlock*>(node);
+        for (auto& stmt : nodePtr->statements) {
+            EliminateUnreachableCode(stmt.get());
+        }
+    }
+
+    return true;
+}
+
 // Helper function to evaluate an expression
-int EvaluateExpression(ASTExpression* expr) {
+int AST::EvaluateExpression(ASTExpression* expr) {
     
     //VARIABLE EXPRESSION
     if (dynamic_cast<ASTExpressionVariable*>(expr) != nullptr) {
@@ -411,75 +476,6 @@ int EvaluateExpression(ASTExpression* expr) {
     //otherwise return unkown
     return 2;
 }
-
-bool EliminateUnreachableCode(ASTStatement* node) {
-    
-    //IF STATEMENT
-    if (dynamic_cast<ASTStatementIf*>(node) != nullptr) {
-        ASTStatementIf* nodePtr = dynamic_cast<ASTStatementIf*>(node);
-
-        std::unique_ptr<ASTExpression> condition = std::move(nodePtr->condition);
-        int condVal = EvaluateExpression(std::move(condition.get()));
-
-        //check for always-true or always-false conditionals
-        if (condVal == 2) {
-            //expression is not guaranteed true or false
-            EliminateUnreachableCode(nodePtr->thenStatement.get());
-            EliminateUnreachableCode(nodePtr->elseStatement.get());
-
-        } else if(condVal == 1) {
-            //expression is always true; 'else' is unreachable
-            EliminateUnreachableCode(nodePtr->thenStatement.get());
-            nodePtr->elseStatement = nullptr;
-        }
-        else{
-            //expression is always false; 'then' is unreachable
-            nodePtr->thenStatement = nullptr;
-            EliminateUnreachableCode(nodePtr->elseStatement.get());
-        }
-    //FOR STATEMENT
-    } else if (dynamic_cast<ASTStatementFor*>(node) != nullptr) {
-        ASTStatementFor* nodePtr = dynamic_cast<ASTStatementFor*>(node);
-
-        //check for always-true or always-false conditionals
-        std::unique_ptr<ASTExpression> condition = std::move(nodePtr->condition);
-        int condVal = EvaluateExpression(std::move(condition.get()));
-
-        if (condVal == 0) {
-            // Loop condition is false or not determinable, loop body is unreachable
-            nodePtr->body = nullptr;
-        } else {
-            // Loop body is reachable
-            EliminateUnreachableCode(nodePtr->body.get());
-        }
-    //WHILE STATEMENT
-    } else if (dynamic_cast<ASTStatementWhile*>(node) != nullptr) {
-
-        ASTStatementWhile* nodePtr = dynamic_cast<ASTStatementWhile*>(node);
-
-        // Evaluate the condition expression
-        std::unique_ptr<ASTExpression> condition = std::move(nodePtr->condition);
-        int condVal = EvaluateExpression(std::move(condition.get()));
-
-        if (condVal == 0) {
-            // Loop condition is false or not determinable, loop body is unreachable
-            nodePtr->thenStatement = nullptr;
-        } else {
-            // Loop body is reachable
-            EliminateUnreachableCode(nodePtr->thenStatement.get());
-        }
-
-    //OTHER STATEMENTS
-    } else if (dynamic_cast<ASTStatementBlock*>(node) != nullptr) {
-        ASTStatementBlock* nodePtr = dynamic_cast<ASTStatementBlock*>(node);
-        for (auto& stmt : nodePtr->statements) {
-            EliminateUnreachableCode(stmt.get());
-        }
-    }
-
-    return true;
-}
-
 
 void AST::mergeVarMaps(std::map<std::string, bool>& map1, std::map<std::string, bool>& map2)
 {
