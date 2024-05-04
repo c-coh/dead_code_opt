@@ -173,8 +173,9 @@ void AST::DeadCodeEliminationPass()
             // Traverse loop body and condition once to obtain accurate live variables going into loop body
             EliminateDeadCode(nodePtr->thenStatement.get(), loopVars, functions, false);
             EliminateDeadCode(nodePtr->condition.get(), loopVars, functions, false);
+            // Merge maps, assigning live status to variables that are live in either branch
             mergeVarMaps(loopVars, variables);
-            if(EliminateDeadCode(nodePtr->thenStatement.get(), loopVars, functions, eliminate)) nodePtr->thenStatement = std::unique_ptr<ASTStatement>(nullptr);
+            if(EliminateDeadCode(nodePtr->thenStatement.get(), loopVars, functions, false)) nodePtr->thenStatement = std::unique_ptr<ASTStatement>(nullptr);
             // Merge maps, assigning live status to variables that are live in either branch
             mergeVarMaps(variables, loopVars);
             if(EliminateDeadCode(nodePtr->condition.get(), variables, functions, eliminate)) nodePtr->condition = std::move(dynamic_cast<ASTExpressionAssignment*>(nodePtr->condition.get())->right);
@@ -187,6 +188,7 @@ void AST::DeadCodeEliminationPass()
             EliminateDeadCode(nodePtr->increment.get(), loopVars, functions, false);
             EliminateDeadCode(nodePtr->body.get(), loopVars, functions, false);
             EliminateDeadCode(nodePtr->condition.get(), loopVars, functions, false);
+            // Merge maps, assigning live status to variables that are live in either branch
             mergeVarMaps(loopVars, variables);
             if(EliminateDeadCode(nodePtr->increment.get(), loopVars, functions, false)) nodePtr->increment = std::move(dynamic_cast<ASTExpressionAssignment*>(nodePtr->increment.get())->right);
             if(EliminateDeadCode(nodePtr->body.get(), loopVars, functions, eliminate)) nodePtr->body = std::unique_ptr<ASTStatement>(nullptr);

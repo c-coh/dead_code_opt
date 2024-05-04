@@ -24,22 +24,20 @@ Required Packages: **CLANG**, **Make**, **CMake**, **LLVM**, **Flex**, **Bison**
 If you are missing any of these required packages, refer to 'PG4_README.md' for installation instructions (Linux).
 
 ## Test Cases
-The primary test cases used for this project were as follows:\
-var1: Variable declared and assigned but never used in function body\
-var2: Variable declared, assigned, and used outside if-else statment but code finished inside if statment and the only usage of the variable cannot be reach\
-var3: Variable declared and assigned inside if-else statment but never used\
-var4: Variable declared and assigned inside for loop but never used\
-var5: Multiple variables declared and assigned but never used in function body\
-var6: Variable declared outside if-else statment and assigned inside if-else statment but never used\
-var7: Variable declared and assigned inside for-loop header but never used\
-var8: Multiple variables declared and assigned outside and inside for-loop body and header but not used\
-var9: Variable declared and assigned in different for-loop body but neither used\
-var10: Multiple variables with different types declared and assigned but never used in function body\
-var11: Variable assigned inside if-else statment but never used in one branch\
+The primary test cases used for this project were as follows:
+var1: Variable declared and assigned but never used in function body
+var2: Variable declared, assigned, and used outside if-else statment but code finished inside if statment and the only usage of the variable cannot be reach
+var3: Variable declared and assigned inside if-else statment but never used
+var4: Variable declared and assigned inside for loop but never used
+var5: Multiple variables declared and assigned but never used in function body
+var6: Variable declared outside if-else statment and assigned inside if-else statment but never used
+var7: Variable declared and assigned inside for-loop header but never used
+var8: Multiple variables declared and assigned outside and inside for-loop body and header but not used
+var9: Variable declared and assigned in different for-loop body but neither used
+var10: Multiple variables with different types declared and assigned but never used in function body
+var11: Variable assigned inside if-else statment but never used in one branch
 var12: Variable assigned inside while loop but never used
 
 Variables declared and assigned but not used in for loop declaration.
 Variables declared and assigned but not used in function which was invoked by another function.
-Function invokded but return value ignored.
-
-[Copy description of test cases from report]
+Function invoked but return value ignored.
