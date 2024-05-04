@@ -1,4 +1,4 @@
-int main() {
+int function() {
     int a;
     int b;
     int c;
@@ -6,4 +6,8 @@ int main() {
     b = 2;
     c = 3; 
     return 0;
+}
+
+int main() {
+    return function();
 }

@@ -1,8 +1,12 @@
-int m(int a) {
+void function() {
     int i;
     int b;
     for (i = 0; i < 5; i = i + 1;) {
         b = 10;
     }
-    return a;
+}
+
+int main() {
+    function();
+    return 0;
 }

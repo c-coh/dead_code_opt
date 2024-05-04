@@ -1,6 +1,6 @@
-
 void function() {
-    int local = 20; 
+    int local;
+    local = 20;
 }
 
 int main() {
