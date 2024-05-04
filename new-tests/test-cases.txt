@@ -5,26 +5,51 @@ Test unreachable code in if, for, and while statements
 Tests:
     test1:
         Tested variable uses in all major classes of nodes without dataflow complexities
-            Classes Tested:
-                Statement blocks
-                Return statements
-                Binary expressions (addition, subtraction, multiplication, division, and, or, comparison)
-                Unary expressions (int to float, float to int, int to bool, bool to int, negation)
-                Function calls
-                Assignment statements
+        Classes Tested:
+            Statement blocks
+            Return statements
+            Binary expressions (addition, subtraction, multiplication, division, and, or, comparison)
+            Unary expressions (int to float, float to int, int to bool, bool to int, negation)
+            Function calls
+            Assignment statements
+        Relevant Lines:
+            Line 15: Variable use in unary expression (int to float)
+            Line 16: Variable use in assignment
+            Line 18: Variable use in binary expression (comparison)
+            Line 19: Variable use in function call
+            Line 24: Variable use in return statement
     test2:
         Tested dead variables in all major classes of nodes without dataflow complexities
-            Classes Tested:
-                Statement blocks
-                Return statements
-                Binary expressions (addition, subtraction, multiplication, division, and, or, comparison)
-                Unary expressions (int to float, float to int, int to bool, bool to int, negation)
-                Function calls
-                Assignment statements
+        Classes Tested:
+            Statement blocks
+            Return statements
+            Binary expressions (addition, subtraction, multiplication, division, and, or, comparison)
+            Unary expressions (int to float, float to int, int to bool, bool to int, negation)
+            Function calls
+            Assignment statements
+        Relevant Lines:
+            Line 13: Dead assignment in statement block
+            Line 14: Dead assignment in binary expression (addition)
+            Line 15: Dead assignment in assignment statement
+            Line 16: Dead assignment in unary operator (int to float)
+            Line 17: Dead assignment in function call
+            Line 18: Dead assignment in return statement
     test3:
         Tested variables dead through one and through all dataflow paths of if statements
         Tested variables dead through for loop body execution only and through all dataflow paths
         Tested variables dead through for loop body execution only and through all dataflow paths
+        Relevant Lines:
+            Line 13: Variable dead through one dataflow path only (then)
+            Line 18: Variable dead through all dataflow paths (reassigned after if statement)
+            Line 20: Dead assignment in if statement
+            Line 24: Variable dead through one dataflow path only (else)
+            Line 30: Variable dead through all dataflow paths (then and else)
+            Line 38: Variable dead through for loop body only
+            Line 43: Variable dead on all paths through for loop
+            Line 45: Dead assignment in for loop
+            Line 49: Variable dead through while loop body only
+            Line 56: Variable dead on all paths through while loop
+            Line 59: Dead assignment in while loop
     test4:
         Tested unreachable code in if, for, and while statements
         Note: Due to checking for an always-true loop condition, test case should be compiled but not run

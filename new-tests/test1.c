@@ -10,16 +10,16 @@ int main()
     int a;
     float b;
     float c;
-    int s;
+    int d;
     a = 1;
-    b = a; // Variable use in unary expression (int to float)
-    c = b; // Variable use in assignment
+    b = a;
+    c = b;
     d = 2;
-    if(b > c) {} // Variable use in binary expression (comparison)
-    printf("%f\n", add(e, c)); // Variable use in function call
+    if(b > c);
+    printf("%f\n", add(d, c));
     a = 1;
     b = 1.0;
     c = 2.3;
     d = 4;
-    return d; // Variable use in return statement
+    return d;
 }
