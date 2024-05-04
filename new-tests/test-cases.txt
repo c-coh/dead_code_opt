@@ -29,4 +29,4 @@ Tests:
         Tested unreachable code in if, for, and while statements
         Note: Due to checking for an always-true loop condition, test case should be compiled but not run
     test5:
-        Tested corner cases such as dead assignments with function calls or assignments as their right-hand side
+        Tested corner cases such as dead assignments with function calls or live assignments as their right-hand side
