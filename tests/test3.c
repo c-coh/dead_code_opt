@@ -49,7 +49,7 @@ int main(bool condition, int x) {
     g = 16;
     i = 0;
     while(i < x) {
-        e = 17;
+        g = 17;
         i = i + 1;
     }
     printf("%f\n", g);

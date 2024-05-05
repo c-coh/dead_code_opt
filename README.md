@@ -5,7 +5,7 @@ Christopher Danner, cld99
 
 Joey Li, xxl1021
 
-[Copy project description from report]
+Code optimization is a fundamental compiler technique that enhances the space and runtime efficiency of code upon compilation. LLVM includes many optimization passes, such as dead code elimination, which are designed to operate on LLVM IR code. In this report, we present our own implementation of the dead code elimination (DCE) pass that operates at the abstract syntax tree (AST) level and compare its performance against the LLVM execution of the same pass and the unoptimized code. The optimization passes were performed with respect to execution time and code. Our evaluation revealed that space and time efficiency increased relative to non-optimized code after performing the optimization pass. [Mention results]
 
 ## Running the Code
 To easily run new test cases or other inputs, add the appropriate C files to the `tests` folder, navigate to the base directory for the project (either open the project folder in the terminal from file explorer or navigate within the terminal using `cd`), and run `./execute tests.sh`. Note that if the `./build.sh` scipt does not work on your computer, you will need to build the files manually by following a process similar to that outlined in `./build.sh` or `PG4_README.md`.
@@ -27,12 +27,11 @@ If you are missing any of these required packages, refer to 'PG4_README.md' for 
 test1:
     Tested variable uses in all major classes of nodes without dataflow complexities
     Classes of Nodes Tested:
-        Statement blocks
-        Return statements
         Binary expressions (addition, subtraction, multiplication, division, and, or, comparison)
         Unary expressions (int to float, float to int, int to bool, bool to int, negation)
         Function calls
         Assignment statements
+        Return statements
     Relevant Lines:
         Line 15: Variable use in unary expression (int to float)
         Line 16: Variable use in assignment
@@ -43,22 +42,23 @@ test2:
     Tested dead variables in all major classes of nodes without dataflow complexities
     Classes of Nodes Tested:
         Statement blocks
-        Return statements
         Binary expressions (addition, subtraction, multiplication, division, and, or, comparison)
         Unary expressions (int to float, float to int, int to bool, bool to int, negation)
         Function calls
         Assignment statements
+        Return statements
     Relevant Lines:
         Line 13: Dead assignment in statement block
         Line 14: Dead assignment in binary expression (addition)
         Line 15: Dead assignment in assignment statement
         Line 16: Dead assignment in unary operator (int to float)
         Line 17: Dead assignment in function call
-        Line 18: Dead assignment in return statement
+        Line 21: Dead assignment in return statement
 test3:
     Tested variables dead through one and through all dataflow paths of if statements
     Tested variables dead through for loop body execution only and through all dataflow paths
     Tested variables dead through for loop body execution only and through all dataflow paths
+    Tested dead variables within if statements, for loops, and while loops
     Relevant Lines:
         Line 13: Variable dead through one dataflow path only (then)
         Line 18: Variable dead through all dataflow paths (reassigned after if statement)
@@ -94,7 +94,7 @@ test4:
         Line 48: Reachable code with indeterminate for loop condition
     Note: Due to checking for an always-true loop condition, test case should be compiled but not run
 test5:
-    Tested corner cases such as dead assignments with function calls or live assignments as their right-hand side
+    Tested corner cases such as dead assignments with function calls or live assignments as their right-hand sides
     Relevant Lines:
         Line 14: Dead assignment with essential function call as right-hand side
         Line 15: Dead assignment with live assignment as right-hand side

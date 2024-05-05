@@ -15,5 +15,8 @@ int main() {
     e = d = 2;
     g = f = 3;
     printf("%f\n", h = 4);
+    printf("%f\n", c);
+    printf("%f\n", e);
+    printf("%f\n", g);
     return i = 5;
 }
