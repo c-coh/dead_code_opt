@@ -5,7 +5,7 @@ Christopher Danner, cld99
 
 Joey Li, xxl1021
 
-Code optimization is a fundamental compiler technique that enhances the space and runtime efficiency of code upon compilation. LLVM includes many optimization passes, such as dead code elimination, which are designed to operate on LLVM IR code. In this report, we present our own implementation of the dead code elimination (DCE) pass that operates at the abstract syntax tree (AST) level and compare its performance against the LLVM execution of the same pass and the unoptimized code. The optimization passes were performed with respect to execution time and code. Our evaluation revealed that space and time efficiency increased relative to non-optimized code after performing the optimization pass. [Mention results]
+Code optimization is a fundamental compiler technique that enhances the space and runtime efficiency of code upon compilation. LLVM includes many optimization passes, such as dead code elimination, which are designed to operate on LLVM IR code. In this report, we present our own implementation of the dead code elimination (DCE) pass that operates at the abstract syntax tree (AST) level and compare its performance against the LLVM execution of the same pass and the unoptimized code.
 
 ## Running the Code
 To easily run new test cases or other inputs, add the appropriate C files to the `tests` folder, navigate to the base directory for the project (either open the project folder in the terminal from file explorer or navigate within the terminal using `cd`), and run `./execute tests.sh`. Note that if the `./build.sh` scipt does not work on your computer, you will need to build the files manually by following a process similar to that outlined in `./build.sh` or `PG4_README.md`.
@@ -98,3 +98,7 @@ test5:
     Relevant Lines:
         Line 14: Dead assignment with essential function call as right-hand side
         Line 15: Dead assignment with live assignment as right-hand side
+performance1:
+    Tested performance with an large number of loops containing an assortment of dead and live code for large performance increase potential
+performance2:
+    Tested performance with a fewer number of loops for better readability
