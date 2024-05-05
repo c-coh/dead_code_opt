@@ -3,7 +3,8 @@
 function runTest {
     ./run.sh -i tests/$1.c -fAsm -o tests/$1.ll &> tests/$1.log
     ./run.sh -i tests/$1.c -fAsm -optimize -o tests/$1Optimized.ll &> tests/$1Optimized.log
-    # lli new-tests/$1.ll &> new-tests/$1Execution.log
+    # lli tests/$1.ll &> tests/$1Execution.log
+    # lli tests/$1Optimized.ll &> tests/$1OptimizedExecution.log
     llvm-as tests/$1.ll -o tests/$1.bc &> tests/$1Bytecode.log
     llvm-as tests/$1Optimized.ll -o tests/$1Optimized.bc &> tests/$1OptimizedBytecode.log
 }
