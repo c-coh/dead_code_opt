@@ -1,13 +1,12 @@
 #!/bin/bash
-
-ITERATIONS=100
+ITERATIONS=10
 
 total_runtime=0
 
 for ((i=1; i<=$ITERATIONS; i++)); do
     start=$(date +%s.%N)
 
-    ./ast
+    ./dce2
 
     end=$(date +%s.%N)
 
@@ -17,5 +16,5 @@ done
 
 average_runtime=$(echo "scale=2; $total_runtime / $ITERATIONS" | bc)
 
-echo "Average runtime of ./dce over $ITERATIONS iterations: $average_runtime seconds"
+echo "Average runtime over $ITERATIONS iterations: $average_runtime seconds"
 

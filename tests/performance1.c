@@ -30,13 +30,13 @@ int nothing(int a, int b)
     int j;
     i = 0;
 
-    while (i < 10000) {
+    while (i < 1000) {
         i = i + 1;
         c = c + 1;
 
         j = 0;
 
-        while (j < 10000) {
+        while (j < 1000) {
             j = j + 1;
             c = c - 1;
         }
@@ -62,12 +62,14 @@ int main()
     d = 0;
     f = 0;
 
-    while (a < 10000) {
+    while (a < 100000) {
         c = 0;
         a = a + 1;
 
-        while (c < 10000) {
-            b = b * 1;
+        while (c < 100000) {
+            b = b * 2;
+            j = 0;
+            b = b;
             c = c + 1;
         }
     }
@@ -78,10 +80,17 @@ int main()
 
         while (i < 10000) {
             j = 0;
+            a = 1;
+            a = 1;
+            a = 1;
             i = i + 1;
 
             while (j < 10000) {
-                b = b * 1;
+                b = b * 3;
+                c = 0;
+                c = 0;
+                c = 0;
+                b = b - 2;
                 j = j + 1;
             }
         }
@@ -89,6 +98,7 @@ int main()
     else {
         d = 100;
         e = 1;
+        c = 0;
     }
 
     b = 10;
@@ -103,6 +113,9 @@ int main()
     a = 0;
     while (a < 10000) {
         c = c * 1;
+        a = a + 1;
+        c = 0;
+        c = 2;
     }
 
     return e + add(0, 0) + nothing(0, 0);
