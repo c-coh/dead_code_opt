@@ -281,7 +281,7 @@ int main(int argc, char **argv) {
   std::string outFile = ""; // File to write to. Nothing for standard out.
   int outputFormat = 3; // 0 - LLVM Assembly. 1 - LLVM Bitcode. 2 - Object (TODO). 3 - AST tree.
   bool printAST = true; // If to print the AST to console.
-  bool optimize = true; // Perform DCE optimization
+  bool optimize = false; // Perform DCE optimization
 
   // Read the arguments. Don't count the first which is the executable name.
   for (int i = 1; i < argc; i++)

@@ -98,3 +98,7 @@ test5:
     Relevant Lines:
         Line 14: Dead assignment with essential function call as right-hand side
         Line 15: Dead assignment with live assignment as right-hand side
+performance1:
+    Tested performance with an large number of loops containing an assortment of dead and live code for large performance increase potential
+performance2:
+    Tested performance with a fewer number of loops for better readability
